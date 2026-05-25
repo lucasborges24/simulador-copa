@@ -267,6 +267,14 @@
   }
   .team-card .flag-line { display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
   .team-card .flag { font-size: 38px; line-height: 1; }
+  /* Bandeiras via Twemoji (Windows não renderiza emoji de bandeira nativamente).
+     A altura herda o font-size do container .flag/.sflag/.cflag/.f. */
+  img.flag-img {
+    height: 1em; width: auto;
+    vertical-align: -0.15em;
+    display: inline-block;
+    user-select: none; -webkit-user-drag: none;
+  }
   .team-card .name {
     font-family: 'Bebas Neue', sans-serif; font-size: 30px;
     line-height: 1; letter-spacing: .015em;
@@ -1356,6 +1364,19 @@ const TEAMS = [
   { grupo:'L', nome:'Panamá',            pos:33, pts:1540.64, flag:'🇵🇦' }
 ];
 
+/* Converte emoji de bandeira em <img> via Twemoji (Windows não tem emoji de bandeira).
+   Aceita pares de regional indicators (🇧🇷) e tag sequences (🏴󠁧󠁢󠁳󠁣󠁴󠁿). */
+const TWEMOJI_BASE = 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/';
+function flagImg(emoji) {
+  const cps = [];
+  for (const ch of emoji) {
+    const cp = ch.codePointAt(0);
+    if (cp === 0xfe0f) continue; // ignora variation selector
+    cps.push(cp.toString(16));
+  }
+  return `<img class="flag-img" src="${TWEMOJI_BASE}${cps.join('-')}.svg" alt="" draggable="false">`;
+}
+
 const GOAL_PROBS = [0.2988, 0.3398, 0.2266, 0.0859, 0.0293, 0.0078, 0.0059, 0.0059, 0.0001, 0.0001, 0.0001];
 const PK_PROBS = [0.7000, 0.7333, 0.6667, 0.6552, 0.6667];
 const PK_SUDDEN_DEATH = 0.6866;
@@ -1651,7 +1672,7 @@ function buildSelect(select, defaultName) {
     groups[g].forEach(t => {
       const opt = document.createElement('option');
       opt.value = t.nome;
-      opt.textContent = `${t.flag}  ${t.nome}  · #${t.pos}`;
+      opt.textContent = `${t.nome} · #${t.pos}`;
       if (t.nome === defaultName) opt.selected = true;
       og.appendChild(opt);
     });
@@ -1665,7 +1686,7 @@ function renderTeamCard(el, t, active = false) {
   el.innerHTML = `
     <span class="group-badge">Grupo ${t.grupo}</span>
     <div class="flag-line">
-      <span class="flag">${t.flag}</span>
+      <span class="flag">${flagImg(t.flag)}</span>
       <span class="name">${t.nome.toUpperCase()}</span>
     </div>
     <div class="stats">
@@ -1702,7 +1723,7 @@ function renderResult(a, b, sim) {
   resultEl.innerHTML = `
     <div class="scoreboard">
       <div class="score-team left">
-        <span class="sflag">${a.flag}</span>
+        <span class="sflag">${flagImg(a.flag)}</span>
         <span class="sname">${a.nome.toUpperCase()}</span>
         <span class="outcome ${classA}">${outA}</span>
       </div>
@@ -1712,7 +1733,7 @@ function renderResult(a, b, sim) {
         <span class="num ${numB}">${goalsB}</span>
       </div>
       <div class="score-team right">
-        <span class="sflag">${b.flag}</span>
+        <span class="sflag">${flagImg(b.flag)}</span>
         <span class="sname">${b.nome.toUpperCase()}</span>
         <span class="outcome ${classB}">${outB}</span>
       </div>
@@ -1852,14 +1873,14 @@ function renderQuickPKHtml() {
     <div class="pk-board">
       <div class="pk-side ${winnerCls('A')}">
         <div class="pk-head">
-          <div class="pk-team"><span class="f">${a.flag}</span><span>${a.nome.toUpperCase()}</span></div>
+          <div class="pk-team"><span class="f">${flagImg(a.flag)}</span><span>${a.nome.toUpperCase()}</span></div>
           <div class="pk-score">${ga}</div>
         </div>
         <div class="pk-dots">${renderDots(s.kicksA, nextIsA)}</div>
       </div>
       <div class="pk-side ${winnerCls('B')}">
         <div class="pk-head">
-          <div class="pk-team"><span class="f">${b.flag}</span><span>${b.nome.toUpperCase()}</span></div>
+          <div class="pk-team"><span class="f">${flagImg(b.flag)}</span><span>${b.nome.toUpperCase()}</span></div>
           <div class="pk-score">${gb}</div>
         </div>
         <div class="pk-dots">${renderDots(s.kicksB, nextIsB)}</div>
@@ -2096,9 +2117,9 @@ function renderGroup() {
         <span class="venue">${m.venue}</span>
       </div>
       <div class="match-teams">
-        <div class="t ${aCls}"><span class="f">${m.a.flag}</span><span>${m.a.nome}</span></div>
+        <div class="t ${aCls}"><span class="f">${flagImg(m.a.flag)}</span><span>${m.a.nome}</span></div>
         ${scoreHtml}
-        <div class="t right ${bCls}"><span>${m.b.nome}</span><span class="f">${m.b.flag}</span></div>
+        <div class="t right ${bCls}"><span>${m.b.nome}</span><span class="f">${flagImg(m.b.flag)}</span></div>
         ${btnHtml}
       </div>
     `;
@@ -2131,7 +2152,7 @@ function renderStandings() {
 
     // ORDER: Seleção · Pts · J · V · E · D · GP · GC · SG
     const cells = [
-      { html: `<span class="team-cell"><span class="f">${r.team.flag}</span>${r.team.nome}</span>`, cls: 'col-team' },
+      { html: `<span class="team-cell"><span class="f">${flagImg(r.team.flag)}</span>${r.team.nome}</span>`, cls: 'col-team' },
       { html: String(r.Pts), cls: 'col-pts' },
       { html: String(r.J),  cls: '' },
       { html: String(r.V),  cls: '' },
@@ -2187,7 +2208,7 @@ function renderBestThirds() {
     tr.innerHTML = `
       <td class="rank-cell">${i + 1}</td>
       <td class="team-cell-3">
-        <span class="f">${row.team.flag}</span>
+        <span class="f">${flagImg(row.team.flag)}</span>
         <span class="nm">${row.team.nome}</span>
       </td>
       <td class="group-cell">${row.group}</td>
@@ -2627,7 +2648,7 @@ function renderTeamLine(team, scoreVal, isWinner, isLoser, pkScoreVal) {
   const pkBadge = (pkScoreVal !== null && pkScoreVal !== undefined)
     ? `<span class="pk-badge">PK ${pkScoreVal}</span>` : '';
   return `<div class="ko-row ${cls}">
-    <span class="f">${team.flag}</span>
+    <span class="f">${flagImg(team.flag)}</span>
     <span class="nm">${team.nome}${pkBadge ? ' ' + pkBadge : ''}</span>
     <span class="sc">${scoreVal !== null && scoreVal !== undefined ? scoreVal : '–'}</span>
   </div>`;
@@ -2652,12 +2673,12 @@ function renderMiniPK(m) {
   return `
     <div class="ko-pk-mini">
       <div class="pk-line">
-        <span class="nm">${s.a.flag}</span>
+        <span class="nm">${flagImg(s.a.flag)}</span>
         <div class="pk-dots-mini">${renderDots(s.kicksA, nextIsA)}</div>
         <span class="pk-sc">${ga}</span>
       </div>
       <div class="pk-line">
-        <span class="nm">${s.b.flag}</span>
+        <span class="nm">${flagImg(s.b.flag)}</span>
         <div class="pk-dots-mini">${renderDots(s.kicksB, nextIsB)}</div>
         <span class="pk-sc">${gb}</span>
       </div>
@@ -2817,7 +2838,7 @@ function renderKnockout() {
     champCard.innerHTML = `
       <div class="crown">🏆</div>
       <div class="ctag">— Campeão da Copa do Mundo 2026 —</div>
-      <div class="cflag">${champion.flag}</div>
+      <div class="cflag">${flagImg(champion.flag)}</div>
       <div class="cname">${champion.nome.toUpperCase()}</div>
       <div class="ccountry">Grupo ${champion.grupo} · #${champion.pos} no Ranking FIFA · ${champion.pts.toFixed(1)} pts</div>
     `;
