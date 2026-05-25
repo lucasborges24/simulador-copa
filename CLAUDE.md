@@ -8,8 +8,8 @@
 ## Estrutura do código
 Todo o código está em index.html, dividido em:
 - <style>: design system com tokens CSS em :root
-- <script>: dados (TEAMS, SCHEDULE, GOAL_PROBS, PK_PROBS), simulação,
-  fase de grupos, mata-mata e renderização
+- <script>: dados (TEAMS, SCHEDULE, WINNER_GOAL_PROBS, DRAW_GOAL_PROBS, PK_PROBS),
+  simulação, fase de grupos, mata-mata e renderização
 
 ## Convenções
 - Fontes: Bebas Neue (títulos), Anton (placares), Manrope (corpo),
@@ -21,7 +21,10 @@ Todo o código está em index.html, dividido em:
 ## Modelo estocástico
 - Probabilidade de vitória/empate/derrota baseada em pontos FIFA + ranking
 - 15% das partidas têm resultado aleatório (RANDOM_RATE)
-- Gols vêm da distribuição empírica das Copas 2010-2022 (GOAL_PROBS)
+- Gols vêm de duas distribuições empíricas das Copas 2010-2022:
+  WINNER_GOAL_PROBS (vencedor em jogos com resultado) e DRAW_GOAL_PROBS
+  (gols por time em empates). Gols do perdedor saem de cálculo
+  probabilístico baseado na discrepância de ranking (sampleLoserGoals)
 - Pênaltis usam taxas históricas por ordem de cobrança (PK_PROBS)
 - Mata-mata: empate → prorrogação (Poisson) → pênaltis se persistir
 
@@ -31,5 +34,6 @@ Todo o código está em index.html, dividido em:
 - Chaveamento M73–M104 conforme regulamento oficial
 
 ## Coisas a evitar
-- Não remova as constantes RANDOM_RATE, GOAL_PROBS, PK_PROBS sem justificar
+- Não remova as constantes RANDOM_RATE, WINNER_GOAL_PROBS, DRAW_GOAL_PROBS,
+  PK_PROBS sem justificar
 - Não troque o layout do bracket sem revalidar as conexões M89→M104

@@ -1377,7 +1377,11 @@ function flagImg(emoji) {
   return `<img class="flag-img" src="${TWEMOJI_BASE}${cps.join('-')}.svg" alt="" draggable="false">`;
 }
 
-const GOAL_PROBS = [0.2988, 0.3398, 0.2266, 0.0859, 0.0293, 0.0078, 0.0059, 0.0059, 0.0001, 0.0001, 0.0001];
+// Distribuições empíricas das Copas 2010-2022.
+// WINNER_GOAL_PROBS: gols do vencedor em partidas com resultado (sem empate).
+// DRAW_GOAL_PROBS:   gols por time em partidas que terminaram empatadas.
+const WINNER_GOAL_PROBS = [0.0000, 0.2714, 0.4171, 0.1859, 0.0754, 0.0201, 0.0151, 0.0151, 0.0000, 0.0000, 0.0000];
+const DRAW_GOAL_PROBS   = [0.3860, 0.4035, 0.1579, 0.0526, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000];
 const PK_PROBS = [0.7000, 0.7333, 0.6667, 0.6552, 0.6667];
 const PK_SUDDEN_DEATH = 0.6866;
 let RANDOM_RATE = 0.15;
@@ -1504,15 +1508,17 @@ const ROUND_DATES = {
  * SIMULATION CORE
  * ============================================================ */
 
-function sampleGoals() {
+function sampleFromDist(dist) {
   const r = Math.random();
   let cum = 0;
-  for (let i = 0; i < GOAL_PROBS.length; i++) {
-    cum += GOAL_PROBS[i];
+  for (let i = 0; i < dist.length; i++) {
+    cum += dist[i];
     if (r < cum) return i;
   }
-  return GOAL_PROBS.length - 1;
+  return dist.length - 1;
 }
+function sampleWinnerGoals() { return sampleFromDist(WINNER_GOAL_PROBS); }
+function sampleDrawGoals()   { return sampleFromDist(DRAW_GOAL_PROBS); }
 
 function computeOutcomeProbs(a, b) {
   const strA = a.pts + (100 - a.pos) * 4;
@@ -1540,7 +1546,7 @@ function sampleLoserGoals(winnerGoals, winner, loser) {
   else                     closeness = 0.80;
   const weights = [];
   for (let g = 0; g <= maxLoserGoals; g++) {
-    const base = GOAL_PROBS[g] || 0.001;
+    const base = WINNER_GOAL_PROBS[g] || 0.001;
     const positionRatio = maxLoserGoals === 0 ? 0 : g / maxLoserGoals;
     const positionWeight = closeness * positionRatio + (1 - closeness) * (1 - positionRatio);
     weights.push(base * (0.35 + positionWeight));
@@ -1567,9 +1573,9 @@ function simulateMatch(a, b) {
   }
   let goalsA, goalsB;
   if (outcome === 'D') {
-    const g = sampleGoals(); goalsA = g; goalsB = g;
+    const g = sampleDrawGoals(); goalsA = g; goalsB = g;
   } else {
-    let wg = sampleGoals(); if (wg === 0) wg = 1;
+    let wg = sampleWinnerGoals(); if (wg === 0) wg = 1;
     if (outcome === 'A') { goalsA = wg; goalsB = sampleLoserGoals(wg, a, b); }
     else { goalsB = wg; goalsA = sampleLoserGoals(wg, b, a); }
   }
