@@ -106,6 +106,97 @@
   }
   .meta-block .label { letter-spacing: .15em; text-transform: uppercase; }
 
+  /* CHAOS CONTROL */
+  .chaos-panel {
+    background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px 28px;
+    margin-bottom: 36px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 28px;
+    align-items: center;
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+  }
+  .chaos-panel::before {
+    content: ""; position: absolute;
+    top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--accent-4), var(--accent), var(--accent-2), var(--accent-3));
+    opacity: .8;
+  }
+  .chaos-label {
+    display: flex; flex-direction: column; gap: 4px;
+    min-width: 160px;
+  }
+  .chaos-label .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: .25em;
+    color: var(--accent); text-transform: uppercase;
+  }
+  .chaos-label .title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px; letter-spacing: .02em; color: var(--text);
+    line-height: 1;
+  }
+  .chaos-label .hint {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--text-faint);
+    letter-spacing: .08em;
+  }
+  .chaos-slider-wrap { display: flex; flex-direction: column; gap: 8px; }
+  .chaos-slider {
+    -webkit-appearance: none; appearance: none;
+    width: 100%; height: 6px; border-radius: 999px;
+    background: linear-gradient(90deg, var(--accent-4) 0%, var(--accent) 50%, var(--accent-3) 100%);
+    outline: none; cursor: pointer;
+  }
+  .chaos-slider::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--text); border: 3px solid var(--bg);
+    box-shadow: 0 0 0 2px var(--accent), 0 6px 14px rgba(0,0,0,.5);
+    cursor: grab; transition: transform .15s;
+  }
+  .chaos-slider::-webkit-slider-thumb:active { cursor: grabbing; transform: scale(1.1); }
+  .chaos-slider::-moz-range-thumb {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--text); border: 3px solid var(--bg);
+    box-shadow: 0 0 0 2px var(--accent), 0 6px 14px rgba(0,0,0,.5);
+    cursor: grab;
+  }
+  .chaos-ticks {
+    display: flex; justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; letter-spacing: .15em;
+    color: var(--text-faint); text-transform: uppercase;
+  }
+  .chaos-ticks span { cursor: pointer; transition: color .15s; }
+  .chaos-ticks span:hover { color: var(--accent); }
+  .chaos-readout {
+    display: flex; flex-direction: column; align-items: flex-end;
+    gap: 2px; min-width: 110px;
+  }
+  .chaos-readout .val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 44px; line-height: 1; color: var(--accent);
+  }
+  .chaos-readout .mode {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: .15em;
+    color: var(--text-dim); text-transform: uppercase;
+  }
+  @media (max-width: 760px) {
+    .chaos-panel {
+      grid-template-columns: 1fr;
+      gap: 16px; padding: 20px;
+    }
+    .chaos-readout { flex-direction: row; justify-content: space-between; align-items: baseline; min-width: 0; }
+    .chaos-readout .val { font-size: 36px; }
+  }
+
   /* SECTIONS */
   section { margin-bottom: 56px; }
   .section-head { display: flex; align-items: baseline; gap: 16px; margin-bottom: 22px; flex-wrap: wrap; }
@@ -167,6 +258,7 @@
   .team-card {
     background: var(--bg-2); border: 1px solid var(--border-soft);
     border-radius: 12px; padding: 20px; min-height: 130px;
+    width: 100%;
     transition: all .25s;
   }
   .team-card.active {
@@ -197,7 +289,7 @@
     background: rgba(0,245,160,.12); color: var(--accent);
     padding: 3px 8px; border-radius: 4px; letter-spacing: .15em;
   }
-  .team-pick.right .team-card .group-badge { float: right; }
+  .team-pick.right .team-card .group-badge { float: none; }
   .vs {
     font-family: 'Bebas Neue', sans-serif;
     font-size: 56px; color: var(--text-faint);
@@ -997,6 +1089,20 @@
     padding: 8px 0 16px;
     display: none;
   }
+
+  .bracket-actions {
+    display: flex; justify-content: center;
+    padding: 8px 0 20px;
+  }
+  .btn-round {
+    background: var(--accent-2); color: #0a0d12; border: none;
+    padding: 12px 32px; font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px; letter-spacing: .15em; border-radius: 999px;
+    cursor: pointer; transition: all .2s;
+    box-shadow: 0 8px 24px rgba(255,210,63,.25);
+  }
+  .btn-round:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(255,210,63,.4); }
+  .btn-round:active { transform: translateY(0); }
   @media (max-width: 1360px) {
     .bracket-hint { display: block; }
   }
@@ -1041,9 +1147,30 @@
     <div class="header-meta">
       <div class="meta-block"><span class="label">Seleções</span><span class="val">48</span></div>
       <div class="meta-block"><span class="label">Grupos</span><span class="val">12</span></div>
-      <div class="meta-block"><span class="label">Aleat.</span><span class="val">15%</span></div>
+      <div class="meta-block"><span class="label">Aleat.</span><span class="val" id="metaChaos">15%</span></div>
     </div>
   </header>
+
+  <!-- CHAOS CONTROL -->
+  <div class="chaos-panel">
+    <div class="chaos-label">
+      <span class="tag">— Parâmetro do modelo</span>
+      <span class="title">CAOS</span>
+      <span class="hint">Probabilidade de zebra</span>
+    </div>
+    <div class="chaos-slider-wrap">
+      <input id="chaosSlider" class="chaos-slider" type="range" min="0" max="99" step="1" value="15" />
+      <div class="chaos-ticks">
+        <span data-chaos="0">Determinístico · 0%</span>
+        <span data-chaos="15">Equilíbrio · 15%</span>
+        <span data-chaos="99">Caótico · 99%</span>
+      </div>
+    </div>
+    <div class="chaos-readout">
+      <span class="val" id="chaosVal">15%</span>
+      <span class="mode" id="chaosMode">Equilíbrio</span>
+    </div>
+  </div>
 
   <!-- 01 QUICK SIM -->
   <section>
@@ -1079,7 +1206,7 @@
     <div class="section-head">
       <span class="num">02 /</span>
       <h2>FASE DE GRUPOS</h2>
-      <span class="desc">Confrontos sorteados. Desempate FIFA: confronto direto → SG → GP → ranking FIFA. Critério disciplinar (cartões) não modelado.</span>
+      <span class="desc">Confrontos sorteados. Desempate FIFA: confronto direto → SG → GP → ranking FIFA.</span>
     </div>
 
     <div class="groups-actions">
@@ -1166,6 +1293,7 @@
       <button id="btnUnlockSim" class="btn-sim">⚡ Simular grupos e abrir mata-mata</button>
     </div>
 
+    <div id="bracketActions" class="bracket-actions" style="display:none;"></div>
     <div id="knockoutBracket" style="display:none;"></div>
     <div class="bracket-hint" id="bracketHint">↔ arraste horizontalmente para ver o chaveamento completo</div>
     <div id="championCard" class="champion-card"></div>
@@ -1231,7 +1359,7 @@ const TEAMS = [
 const GOAL_PROBS = [0.2988, 0.3398, 0.2266, 0.0859, 0.0293, 0.0078, 0.0059, 0.0059, 0.0001, 0.0001, 0.0001];
 const PK_PROBS = [0.7000, 0.7333, 0.6667, 0.6552, 0.6667];
 const PK_SUDDEN_DEATH = 0.6866;
-const RANDOM_RATE = 0.15;
+let RANDOM_RATE = 0.15;
 const GROUPS = [...new Set(TEAMS.map(t => t.grupo))];
 
 // Official FIFA World Cup 2026 group stage schedule (BRT — Brasília time)
@@ -1474,7 +1602,7 @@ function pkScore(arr) { return arr.filter(k => k).length; }
 function checkShootoutDecided(s) {
   const ka = s.kicksA.length, kb = s.kicksB.length;
   const ga = pkScore(s.kicksA), gb = pkScore(s.kicksB);
-  if (ka <= 5 || kb <= 5) {
+  if (ka <= 5 && kb <= 5) {
     const remA = Math.max(0, 5 - ka);
     const remB = Math.max(0, 5 - kb);
     if (ga > gb + remB) { s.decided = true; s.winner = 'A'; return; }
@@ -1767,6 +1895,38 @@ btnSim.addEventListener('click', () => {
 buildSelect(selA, 'Brasil');
 buildSelect(selB, 'Argentina');
 refreshCards();
+
+/* ============================================================
+ * CHAOS CONTROL
+ * Slider de 0–99% que ajusta RANDOM_RATE em tempo real.
+ * 0% = puramente determinístico (sempre usa as probabilidades do modelo)
+ * 99% = praticamente puro acaso (cada partida pode dar qualquer coisa)
+ * ============================================================ */
+const chaosSlider = document.getElementById('chaosSlider');
+const chaosVal    = document.getElementById('chaosVal');
+const chaosMode   = document.getElementById('chaosMode');
+const metaChaos   = document.getElementById('metaChaos');
+
+function chaosModeLabel(v) {
+  if (v <= 5)  return 'Determinístico';
+  if (v <= 24) return 'Equilíbrio';
+  if (v <= 59) return 'Imprevisível';
+  if (v <= 84) return 'Turbulento';
+  return 'Caótico';
+}
+function applyChaos(v) {
+  v = Math.max(0, Math.min(99, Math.round(v)));
+  RANDOM_RATE = v / 100;
+  chaosSlider.value = v;
+  chaosVal.textContent = v + '%';
+  chaosMode.textContent = chaosModeLabel(v);
+  metaChaos.textContent = v + '%';
+}
+chaosSlider.addEventListener('input', e => applyChaos(+e.target.value));
+document.querySelectorAll('.chaos-ticks span[data-chaos]').forEach(el => {
+  el.addEventListener('click', () => applyChaos(+el.dataset.chaos));
+});
+applyChaos(15);
 
 /* ============================================================
  * GROUP STAGE
@@ -2321,9 +2481,113 @@ function resetKnockout() {
   ko = null;
   document.getElementById('knockoutBracket').style.display = 'none';
   document.getElementById('knockoutBracket').innerHTML = '';
+  document.getElementById('bracketActions').style.display = 'none';
+  document.getElementById('bracketActions').innerHTML = '';
   document.getElementById('knockoutLocked').style.display = 'block';
   document.getElementById('championCard').classList.remove('show');
   document.getElementById('bracketHint').style.display = '';
+}
+
+/* Order of rounds for the "simulate all of this round" button.
+ * The earliest round that still has at least one match with both teams
+ * set and not played is the "current" round. */
+const ROUND_ORDER = ['R32', 'R16', 'QF', 'SF', 'FINAL'];
+
+function matchesInRound(round) {
+  if (round === 'FINAL') return ['M103', 'M104'].map(id => ko[id]);
+  const layout = BRACKET_LAYOUT;
+  const ids = [];
+  if (layout.left[round])  ids.push(...layout.left[round]);
+  if (layout.right[round]) ids.push(...layout.right[round]);
+  return ids.map(id => ko[id]);
+}
+
+function getCurrentRound() {
+  if (!ko) return null;
+  for (const round of ROUND_ORDER) {
+    const matches = matchesInRound(round);
+    // Pending = both teams set but no winner yet (covers unplayed,
+    // awaiting extra time, awaiting PK, or shootout in progress).
+    const hasPending = matches.some(m => m && m.a && m.b && !m.winner);
+    if (hasPending) return round;
+  }
+  return null;
+}
+
+function resolveKnockoutMatch(m) {
+  if (!m || !m.a || !m.b || m.played) return;
+  const sim = simulateMatch(m.a, m.b);
+  m.played = true;
+  m.regularA = sim.goalsA;
+  m.regularB = sim.goalsB;
+  m.goalsA = sim.goalsA;
+  m.goalsB = sim.goalsB;
+  m.outcome = sim.outcome;
+  m.hadExtraTime = false;
+  m.etWaiting = false;
+  m.pkWaiting = false;
+
+  if (sim.outcome === 'A')      { m.winner = m.a; m.loser = m.b; }
+  else if (sim.outcome === 'B') { m.winner = m.b; m.loser = m.a; }
+  else {
+    const et = simulateExtraTime(m.a, m.b);
+    m.extraA = et.extraA;
+    m.extraB = et.extraB;
+    m.goalsA = m.regularA + et.extraA;
+    m.goalsB = m.regularB + et.extraB;
+    m.hadExtraTime = true;
+
+    if (m.goalsA > m.goalsB)      { m.winner = m.a; m.loser = m.b; }
+    else if (m.goalsB > m.goalsA) { m.winner = m.b; m.loser = m.a; }
+    else {
+      m.shootout = newShootout(m.a, m.b);
+      while (!m.shootout.decided) takeKick(m.shootout);
+      if (m.shootout.winner === 'A') { m.winner = m.a; m.loser = m.b; }
+      else                            { m.winner = m.b; m.loser = m.a; }
+    }
+  }
+  advanceWinner(m.id);
+}
+
+function simulateAllInRound(round) {
+  const matches = matchesInRound(round);
+  matches.forEach(m => {
+    if (m && m.a && m.b && !m.played) resolveKnockoutMatch(m);
+    // If a match was started (etWaiting / pkWaiting / mid-shootout), finish it too.
+    else if (m && m.etWaiting) {
+      const et = simulateExtraTime(m.a, m.b);
+      m.extraA = et.extraA;
+      m.extraB = et.extraB;
+      m.goalsA = m.regularA + et.extraA;
+      m.goalsB = m.regularB + et.extraB;
+      m.hadExtraTime = true;
+      m.etWaiting = false;
+      if (m.goalsA > m.goalsB)      { m.winner = m.a; m.loser = m.b; advanceWinner(m.id); }
+      else if (m.goalsB > m.goalsA) { m.winner = m.b; m.loser = m.a; advanceWinner(m.id); }
+      else {
+        m.shootout = newShootout(m.a, m.b);
+        while (!m.shootout.decided) takeKick(m.shootout);
+        if (m.shootout.winner === 'A') { m.winner = m.a; m.loser = m.b; }
+        else                            { m.winner = m.b; m.loser = m.a; }
+        advanceWinner(m.id);
+      }
+    }
+    else if (m && m.pkWaiting) {
+      m.shootout = newShootout(m.a, m.b);
+      while (!m.shootout.decided) takeKick(m.shootout);
+      m.pkWaiting = false;
+      if (m.shootout.winner === 'A') { m.winner = m.a; m.loser = m.b; }
+      else                            { m.winner = m.b; m.loser = m.a; }
+      advanceWinner(m.id);
+    }
+    else if (m && m.shootout && !m.shootout.decided) {
+      while (!m.shootout.decided) takeKick(m.shootout);
+      if (m.shootout.winner === 'A') { m.winner = m.a; m.loser = m.b; }
+      else                            { m.winner = m.b; m.loser = m.a; }
+      advanceWinner(m.id);
+    }
+  });
+  renderKnockout();
 }
 
 function onGroupsChange() {
@@ -2532,6 +2796,18 @@ function renderKnockout() {
       if (act === 'kick')    takeKnockoutKick(mid);
     });
   });
+
+  // "Simulate all matches in the current round" button
+  const actionsRoot = document.getElementById('bracketActions');
+  const currentRound = getCurrentRound();
+  if (currentRound) {
+    actionsRoot.style.display = '';
+    actionsRoot.innerHTML = `<button class="btn-round" id="btnSimRound">⚡ Simular ${ROUND_LABELS[currentRound]}</button>`;
+    document.getElementById('btnSimRound').addEventListener('click', () => simulateAllInRound(currentRound));
+  } else {
+    actionsRoot.style.display = 'none';
+    actionsRoot.innerHTML = '';
+  }
 
   // Champion display
   const finalMatch = ko['M104'];
