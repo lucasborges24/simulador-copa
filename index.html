@@ -2270,18 +2270,30 @@ function playKnockoutMatch(matchId) {
   if (sim.outcome === 'A')      { m.winner = m.a; m.loser = m.b; }
   else if (sim.outcome === 'B') { m.winner = m.b; m.loser = m.a; }
   else {
-    // FIFA §14 — Draw at 90'. Simulate extra time (2 × 15 min).
-    const et = simulateExtraTime(m.a, m.b);
-    m.extraA = et.extraA;
-    m.extraB = et.extraB;
-    m.goalsA = m.regularA + et.extraA;
-    m.goalsB = m.regularB + et.extraB;
-    m.hadExtraTime = true;
-
-    if (m.goalsA > m.goalsB)      { m.winner = m.a; m.loser = m.b; }
-    else if (m.goalsB > m.goalsA) { m.winner = m.b; m.loser = m.a; }
-    else { m.pkWaiting = true; m.winner = null; m.loser = null; }
+    // FIFA §14 — Draw at 90'. Wait for user to trigger extra time.
+    m.etWaiting = true;
+    m.winner = null;
+    m.loser = null;
   }
+  if (m.winner) advanceWinner(matchId);
+  renderKnockout();
+}
+
+function playKnockoutExtraTime(matchId) {
+  const m = ko[matchId];
+  if (!m.etWaiting) return;
+  const et = simulateExtraTime(m.a, m.b);
+  m.extraA = et.extraA;
+  m.extraB = et.extraB;
+  m.goalsA = m.regularA + et.extraA;
+  m.goalsB = m.regularB + et.extraB;
+  m.hadExtraTime = true;
+  m.etWaiting = false;
+
+  if (m.goalsA > m.goalsB)      { m.winner = m.a; m.loser = m.b; }
+  else if (m.goalsB > m.goalsA) { m.winner = m.b; m.loser = m.a; }
+  else { m.pkWaiting = true; m.winner = null; m.loser = null; }
+
   if (m.winner) advanceWinner(matchId);
   renderKnockout();
 }
@@ -2404,6 +2416,7 @@ function renderBracketCard(m, side) {
 
   // Card state classes
   const ready = m.a && m.b && !m.played;
+  const etReady = m.etWaiting;
   const penReady = m.pkWaiting;
   const penActive = m.shootout && !m.shootout.decided;
   const done = m.played && m.winner;
@@ -2416,8 +2429,8 @@ function renderBracketCard(m, side) {
     m.round === '3RD' ? 'third-card' : '',
     notReady ? 'not-ready' : '',
     done ? 'done' : '',
-    (ready || penReady || penActive) ? 'clickable' : '',
-    (penReady || penActive) ? 'pen-ready' : '',
+    (ready || etReady || penReady || penActive) ? 'clickable' : '',
+    (etReady || penReady || penActive) ? 'pen-ready' : '',
     penActive ? 'pen-active' : ''
   ].filter(Boolean).join(' ');
 
@@ -2427,6 +2440,8 @@ function renderBracketCard(m, side) {
     statusHtml = `<div class="ko-status">Aguardando</div>`;
   } else if (ready) {
     statusHtml = `<div class="ko-status play">▶ Clique para simular</div>`;
+  } else if (etReady) {
+    statusHtml = `<div class="ko-status pen">⏱ Empate no 90' (${m.regularA}–${m.regularB}) · clique p/ prorrogação</div>`;
   } else if (penReady) {
     statusHtml = `<div class="ko-status pen">⚽ Empate após pror. · clique p/ pênaltis</div>`;
   } else if (penActive) {
@@ -2448,6 +2463,7 @@ function renderBracketCard(m, side) {
   // Click handler attached after render
   const dataAction = penActive ? 'kick'
                   : penReady    ? 'startpk'
+                  : etReady     ? 'playet'
                   : ready       ? 'play'
                   : '';
 
@@ -2511,6 +2527,7 @@ function renderKnockout() {
     const mid = card.dataset.mid;
     card.addEventListener('click', () => {
       if (act === 'play')    playKnockoutMatch(mid);
+      if (act === 'playet')  playKnockoutExtraTime(mid);
       if (act === 'startpk') startKnockoutPK(mid);
       if (act === 'kick')    takeKnockoutKick(mid);
     });
