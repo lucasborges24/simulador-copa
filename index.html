@@ -1392,96 +1392,96 @@ const GROUPS = [...new Set(TEAMS.map(t => t.grupo))];
 // Source: FIFA, Soccerway. Date format: YYYY-MM-DD, time: HH:MM (24h, Brasília GMT-3)
 const SCHEDULE = {
   A: [
-    { home: 'México',        away: 'África do Sul', date: '2026-06-11', time: '16:00', venue: 'Cidade do México' },
-    { home: 'Coreia do Sul', away: 'Tchéquia',      date: '2026-06-11', time: '23:00', venue: 'Guadalajara' },
-    { home: 'Tchéquia',      away: 'África do Sul', date: '2026-06-18', time: '13:00', venue: 'Atlanta' },
+    { home: 'México',        away: 'África do Sul', date: '2026-06-11', time: '16:00', venue: 'Cidade do México', fixedScore: [2, 0] },
+    { home: 'Coreia do Sul', away: 'Tchéquia',      date: '2026-06-11', time: '23:00', venue: 'Guadalajara',     fixedScore: [2, 1] },
+    { home: 'Tchéquia',      away: 'África do Sul', date: '2026-06-18', time: '13:00', venue: 'Atlanta',          fixedScore: [1, 1] },
     { home: 'México',        away: 'Coreia do Sul', date: '2026-06-18', time: '22:00', venue: 'Guadalajara' },
     { home: 'Tchéquia',      away: 'México',        date: '2026-06-24', time: '22:00', venue: 'Cidade do México' },
     { home: 'África do Sul', away: 'Coreia do Sul', date: '2026-06-24', time: '22:00', venue: 'Monterrey' }
   ],
   B: [
-    { home: 'Canadá',               away: 'Bósnia e Herzegovina', date: '2026-06-12', time: '16:00', venue: 'Toronto' },
-    { home: 'Catar',                away: 'Suíça',                date: '2026-06-13', time: '16:00', venue: 'San Francisco' },
+    { home: 'Canadá',               away: 'Bósnia e Herzegovina', date: '2026-06-12', time: '16:00', venue: 'Toronto',      fixedScore: [1, 1] },
+    { home: 'Catar',                away: 'Suíça',                date: '2026-06-13', time: '16:00', venue: 'San Francisco', fixedScore: [1, 1] },
     { home: 'Suíça',                away: 'Bósnia e Herzegovina', date: '2026-06-18', time: '16:00', venue: 'Los Angeles' },
     { home: 'Canadá',               away: 'Catar',                date: '2026-06-18', time: '19:00', venue: 'Vancouver' },
     { home: 'Suíça',                away: 'Canadá',               date: '2026-06-24', time: '16:00', venue: 'Vancouver' },
     { home: 'Bósnia e Herzegovina', away: 'Catar',                date: '2026-06-24', time: '16:00', venue: 'Seattle' }
   ],
   C: [
-    { home: 'Brasil',   away: 'Marrocos', date: '2026-06-13', time: '19:00', venue: 'Nova York/Nova Jersey' },
-    { home: 'Haiti',    away: 'Escócia',  date: '2026-06-13', time: '22:00', venue: 'Boston' },
+    { home: 'Brasil',   away: 'Marrocos', date: '2026-06-13', time: '19:00', venue: 'Nova York/Nova Jersey', fixedScore: [1, 1] },
+    { home: 'Haiti',    away: 'Escócia',  date: '2026-06-13', time: '22:00', venue: 'Boston',                fixedScore: [0, 1] },
     { home: 'Escócia',  away: 'Marrocos', date: '2026-06-19', time: '19:00', venue: 'Boston' },
     { home: 'Brasil',   away: 'Haiti',    date: '2026-06-19', time: '22:00', venue: 'Filadélfia' },
     { home: 'Escócia',  away: 'Brasil',   date: '2026-06-24', time: '19:00', venue: 'Miami' },
     { home: 'Marrocos', away: 'Haiti',    date: '2026-06-24', time: '19:00', venue: 'Atlanta' }
   ],
   D: [
-    { home: 'Estados Unidos', away: 'Paraguai',       date: '2026-06-12', time: '22:00', venue: 'Los Angeles' },
-    { home: 'Austrália',      away: 'Turquia',        date: '2026-06-13', time: '01:00', venue: 'Vancouver' },
+    { home: 'Estados Unidos', away: 'Paraguai',       date: '2026-06-12', time: '22:00', venue: 'Los Angeles',  fixedScore: [4, 1] },
+    { home: 'Austrália',      away: 'Turquia',        date: '2026-06-13', time: '01:00', venue: 'Vancouver',    fixedScore: [2, 0] },
     { home: 'Turquia',        away: 'Paraguai',       date: '2026-06-19', time: '01:00', venue: 'San Francisco' },
     { home: 'Estados Unidos', away: 'Austrália',      date: '2026-06-19', time: '16:00', venue: 'Seattle' },
     { home: 'Turquia',        away: 'Estados Unidos', date: '2026-06-25', time: '23:00', venue: 'Los Angeles' },
     { home: 'Paraguai',       away: 'Austrália',      date: '2026-06-25', time: '23:00', venue: 'San Francisco' }
   ],
   E: [
-    { home: 'Alemanha',        away: 'Curaçao',         date: '2026-06-14', time: '14:00', venue: 'Houston' },
-    { home: 'Costa do Marfim', away: 'Equador',         date: '2026-06-14', time: '20:00', venue: 'Filadélfia' },
+    { home: 'Alemanha',        away: 'Curaçao',         date: '2026-06-14', time: '14:00', venue: 'Houston',    fixedScore: [7, 1] },
+    { home: 'Costa do Marfim', away: 'Equador',         date: '2026-06-14', time: '20:00', venue: 'Filadélfia', fixedScore: [1, 0] },
     { home: 'Alemanha',        away: 'Costa do Marfim', date: '2026-06-20', time: '17:00', venue: 'Toronto' },
     { home: 'Equador',         away: 'Curaçao',         date: '2026-06-20', time: '21:00', venue: 'Kansas City' },
     { home: 'Equador',         away: 'Alemanha',        date: '2026-06-25', time: '17:00', venue: 'Nova York/Nova Jersey' },
     { home: 'Curaçao',         away: 'Costa do Marfim', date: '2026-06-25', time: '17:00', venue: 'Filadélfia' }
   ],
   F: [
-    { home: 'Países Baixos', away: 'Japão',         date: '2026-06-14', time: '17:00', venue: 'Dallas' },
-    { home: 'Suécia',        away: 'Tunísia',       date: '2026-06-14', time: '23:00', venue: 'Monterrey' },
+    { home: 'Países Baixos', away: 'Japão',         date: '2026-06-14', time: '17:00', venue: 'Dallas',    fixedScore: [2, 2] },
+    { home: 'Suécia',        away: 'Tunísia',       date: '2026-06-14', time: '23:00', venue: 'Monterrey', fixedScore: [5, 1] },
     { home: 'Países Baixos', away: 'Suécia',        date: '2026-06-20', time: '14:00', venue: 'Houston' },
     { home: 'Tunísia',       away: 'Japão',         date: '2026-06-21', time: '01:00', venue: 'Monterrey' },
     { home: 'Japão',         away: 'Suécia',        date: '2026-06-25', time: '20:00', venue: 'Dallas' },
     { home: 'Tunísia',       away: 'Países Baixos', date: '2026-06-25', time: '20:00', venue: 'Kansas City' }
   ],
   G: [
-    { home: 'Bélgica',       away: 'Egito',         date: '2026-06-15', time: '16:00', venue: 'Seattle' },
-    { home: 'Irã',           away: 'Nova Zelândia', date: '2026-06-15', time: '22:00', venue: 'Los Angeles' },
+    { home: 'Bélgica',       away: 'Egito',         date: '2026-06-15', time: '16:00', venue: 'Seattle',     fixedScore: [1, 1] },
+    { home: 'Irã',           away: 'Nova Zelândia', date: '2026-06-15', time: '22:00', venue: 'Los Angeles', fixedScore: [2, 2] },
     { home: 'Bélgica',       away: 'Irã',           date: '2026-06-21', time: '16:00', venue: 'Los Angeles' },
     { home: 'Nova Zelândia', away: 'Egito',         date: '2026-06-21', time: '22:00', venue: 'Vancouver' },
     { home: 'Egito',         away: 'Irã',           date: '2026-06-27', time: '00:00', venue: 'Seattle' },
     { home: 'Nova Zelândia', away: 'Bélgica',       date: '2026-06-27', time: '00:00', venue: 'Vancouver' }
   ],
   H: [
-    { home: 'Espanha',        away: 'Cabo Verde',     date: '2026-06-15', time: '13:00', venue: 'Atlanta' },
-    { home: 'Arábia Saudita', away: 'Uruguai',        date: '2026-06-15', time: '19:00', venue: 'Miami' },
+    { home: 'Espanha',        away: 'Cabo Verde',     date: '2026-06-15', time: '13:00', venue: 'Atlanta',  fixedScore: [0, 0] },
+    { home: 'Arábia Saudita', away: 'Uruguai',        date: '2026-06-15', time: '19:00', venue: 'Miami',    fixedScore: [1, 1] },
     { home: 'Espanha',        away: 'Arábia Saudita', date: '2026-06-21', time: '13:00', venue: 'Atlanta' },
     { home: 'Uruguai',        away: 'Cabo Verde',     date: '2026-06-21', time: '19:00', venue: 'Miami' },
     { home: 'Cabo Verde',     away: 'Arábia Saudita', date: '2026-06-26', time: '21:00', venue: 'Houston' },
     { home: 'Uruguai',        away: 'Espanha',        date: '2026-06-26', time: '21:00', venue: 'Guadalajara' }
   ],
   I: [
-    { home: 'França',  away: 'Senegal', date: '2026-06-16', time: '16:00', venue: 'Nova York/Nova Jersey' },
-    { home: 'Iraque',  away: 'Noruega', date: '2026-06-16', time: '19:00', venue: 'Boston' },
+    { home: 'França',  away: 'Senegal', date: '2026-06-16', time: '16:00', venue: 'Nova York/Nova Jersey', fixedScore: [3, 1] },
+    { home: 'Iraque',  away: 'Noruega', date: '2026-06-16', time: '19:00', venue: 'Boston',                fixedScore: [1, 4] },
     { home: 'França',  away: 'Iraque',  date: '2026-06-22', time: '18:00', venue: 'Filadélfia' },
     { home: 'Noruega', away: 'Senegal', date: '2026-06-22', time: '21:00', venue: 'Nova York/Nova Jersey' },
     { home: 'Noruega', away: 'França',  date: '2026-06-26', time: '16:00', venue: 'Boston' },
     { home: 'Senegal', away: 'Iraque',  date: '2026-06-26', time: '16:00', venue: 'Toronto' }
   ],
   J: [
-    { home: 'Argentina', away: 'Argélia',   date: '2026-06-16', time: '14:00', venue: 'Kansas City' },
-    { home: 'Áustria',   away: 'Jordânia',  date: '2026-06-17', time: '01:00', venue: 'San Francisco' },
+    { home: 'Argentina', away: 'Argélia',   date: '2026-06-16', time: '14:00', venue: 'Kansas City',  fixedScore: [3, 0] },
+    { home: 'Áustria',   away: 'Jordânia',  date: '2026-06-17', time: '01:00', venue: 'San Francisco', fixedScore: [3, 1] },
     { home: 'Argentina', away: 'Áustria',   date: '2026-06-22', time: '14:00', venue: 'Dallas' },
     { home: 'Jordânia',  away: 'Argélia',   date: '2026-06-23', time: '00:00', venue: 'San Francisco' },
     { home: 'Argélia',   away: 'Áustria',   date: '2026-06-27', time: '23:00', venue: 'Kansas City' },
     { home: 'Jordânia',  away: 'Argentina', date: '2026-06-27', time: '23:00', venue: 'Dallas' }
   ],
   K: [
-    { home: 'Portugal',    away: 'RD Congo',    date: '2026-06-17', time: '14:00', venue: 'Houston' },
-    { home: 'Uzbequistão', away: 'Colômbia',    date: '2026-06-17', time: '23:00', venue: 'Cidade do México' },
+    { home: 'Portugal',    away: 'RD Congo',    date: '2026-06-17', time: '14:00', venue: 'Houston',          fixedScore: [1, 1] },
+    { home: 'Uzbequistão', away: 'Colômbia',    date: '2026-06-17', time: '23:00', venue: 'Cidade do México', fixedScore: [1, 3] },
     { home: 'Portugal',    away: 'Uzbequistão', date: '2026-06-23', time: '14:00', venue: 'Houston' },
     { home: 'Colômbia',    away: 'RD Congo',    date: '2026-06-23', time: '23:00', venue: 'Guadalajara' },
     { home: 'Colômbia',    away: 'Portugal',    date: '2026-06-27', time: '20:30', venue: 'Miami' },
     { home: 'RD Congo',    away: 'Uzbequistão', date: '2026-06-27', time: '20:30', venue: 'Atlanta' }
   ],
   L: [
-    { home: 'Inglaterra', away: 'Croácia',    date: '2026-06-17', time: '17:00', venue: 'Dallas' },
-    { home: 'Gana',       away: 'Panamá',     date: '2026-06-17', time: '20:00', venue: 'Toronto' },
+    { home: 'Inglaterra', away: 'Croácia',    date: '2026-06-17', time: '17:00', venue: 'Dallas',   fixedScore: [4, 2] },
+    { home: 'Gana',       away: 'Panamá',     date: '2026-06-17', time: '20:00', venue: 'Toronto',  fixedScore: [1, 0] },
     { home: 'Inglaterra', away: 'Gana',       date: '2026-06-23', time: '17:00', venue: 'Boston' },
     { home: 'Panamá',     away: 'Croácia',    date: '2026-06-23', time: '20:00', venue: 'Toronto' },
     { home: 'Panamá',     away: 'Inglaterra', date: '2026-06-27', time: '18:00', venue: 'Nova York/Nova Jersey' },
@@ -1973,16 +1973,27 @@ const fixtures = {};
 function buildFixtures() {
   GROUPS.forEach(g => {
     const teamByName = n => TEAMS.find(t => t.nome === n);
-    fixtures[g] = SCHEDULE[g].map((s, idx) => ({
-      a: teamByName(s.home),
-      b: teamByName(s.away),
-      date: s.date,
-      time: s.time,
-      venue: s.venue,
-      // Rounds: matches 1-2 = round 1, 3-4 = round 2, 5-6 = round 3
-      round: Math.floor(idx / 2) + 1,
-      played: false
-    }));
+    fixtures[g] = SCHEDULE[g].map((s, idx) => {
+      const m = {
+        a: teamByName(s.home),
+        b: teamByName(s.away),
+        date: s.date,
+        time: s.time,
+        venue: s.venue,
+        // Rounds: matches 1-2 = round 1, 3-4 = round 2, 5-6 = round 3
+        round: Math.floor(idx / 2) + 1,
+        played: false,
+        fixed: false
+      };
+      if (s.fixedScore) {
+        m.goalsA = s.fixedScore[0];
+        m.goalsB = s.fixedScore[1];
+        m.outcome = m.goalsA > m.goalsB ? 'A' : m.goalsA < m.goalsB ? 'B' : 'D';
+        m.played = true;
+        m.fixed = true;
+      }
+      return m;
+    });
   });
 }
 
@@ -2110,7 +2121,9 @@ function renderGroup() {
       else if (m.outcome === 'B') cls += ' win-b';
       else cls += ' draw';
       scoreHtml = `<div class="score-mini ${cls}"><span class="a">${m.goalsA}</span> · <span class="b">${m.goalsB}</span></div>`;
-      btnHtml = `<button class="btn-mini played" data-idx="${idx}">↻ Re-sim</button>`;
+      btnHtml = m.fixed
+        ? `<button class="btn-mini played" disabled title="Resultado oficial">✓ Oficial</button>`
+        : `<button class="btn-mini played" data-idx="${idx}">↻ Re-sim</button>`;
     } else {
       scoreHtml = `<div class="score-mini">– · –</div>`;
       btnHtml = `<button class="btn-mini" data-idx="${idx}">▶ Simular</button>`;
@@ -2133,10 +2146,11 @@ function renderGroup() {
     matchesBody.appendChild(row);
   });
 
-  matchesBody.querySelectorAll('.btn-mini').forEach(b => {
+  matchesBody.querySelectorAll('.btn-mini[data-idx]').forEach(b => {
     b.addEventListener('click', () => {
       const idx = +b.dataset.idx;
       const m = fixtures[activeGroup][idx];
+      if (m.fixed) return;
       const sim = simulateMatch(m.a, m.b);
       m.played = true;
       m.goalsA = sim.goalsA; m.goalsB = sim.goalsB; m.outcome = sim.outcome;
@@ -2240,34 +2254,31 @@ function renderBestThirds() {
   });
 }
 
+function resetMatch(m) {
+  if (m.fixed) return;
+  m.played = false; delete m.goalsA; delete m.goalsB; delete m.outcome;
+}
+function simMatch(m) {
+  if (m.fixed) return;
+  const sim = simulateMatch(m.a, m.b);
+  m.played = true;
+  m.goalsA = sim.goalsA; m.goalsB = sim.goalsB; m.outcome = sim.outcome;
+}
+
 btnAll.addEventListener('click', () => {
-  fixtures[activeGroup].forEach(m => {
-    const sim = simulateMatch(m.a, m.b);
-    m.played = true;
-    m.goalsA = sim.goalsA; m.goalsB = sim.goalsB; m.outcome = sim.outcome;
-  });
+  fixtures[activeGroup].forEach(simMatch);
   renderGroup(); buildTabs(); onGroupsChange();
 });
 btnReset.addEventListener('click', () => {
-  fixtures[activeGroup].forEach(m => {
-    m.played = false; delete m.goalsA; delete m.goalsB; delete m.outcome;
-  });
+  fixtures[activeGroup].forEach(resetMatch);
   renderGroup(); buildTabs(); onGroupsChange();
 });
 btnSimAll.addEventListener('click', () => {
-  GROUPS.forEach(g => {
-    fixtures[g].forEach(m => {
-      const sim = simulateMatch(m.a, m.b);
-      m.played = true;
-      m.goalsA = sim.goalsA; m.goalsB = sim.goalsB; m.outcome = sim.outcome;
-    });
-  });
+  GROUPS.forEach(g => fixtures[g].forEach(simMatch));
   renderGroup(); buildTabs(); onGroupsChange();
 });
 btnResetAll.addEventListener('click', () => {
-  GROUPS.forEach(g => fixtures[g].forEach(m => {
-    m.played = false; delete m.goalsA; delete m.goalsB; delete m.outcome;
-  }));
+  GROUPS.forEach(g => fixtures[g].forEach(resetMatch));
   resetKnockout();
   renderGroup(); buildTabs(); onGroupsChange();
 });
