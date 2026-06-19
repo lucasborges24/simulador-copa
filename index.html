@@ -996,6 +996,74 @@
   .ko-status.pen { color: var(--accent-2); }
   .ko-status.done { color: var(--text-faint); }
 
+  /* Manual score entry — group stage */
+  .match-btns { display: flex; flex-direction: column; gap: 4px; }
+  .score-edit-inline {
+    display: flex; align-items: center; justify-content: center; gap: 4px;
+  }
+  .score-in {
+    width: 32px; text-align: center;
+    font-family: 'JetBrains Mono', monospace; font-size: 14px;
+    padding: 4px 2px; border: 1px solid var(--border); border-radius: 4px;
+    background: var(--surface); color: var(--text);
+    -moz-appearance: textfield;
+  }
+  .score-in::-webkit-outer-spin-button,
+  .score-in::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .score-in:focus { border-color: var(--accent); outline: none; }
+  .score-edit-inline .sep { color: var(--text-faint); font-family: 'JetBrains Mono', monospace; }
+  .btn-mini.edit-score {
+    background: transparent; border-color: var(--border-soft);
+    color: var(--text-faint); padding: 4px 6px;
+  }
+  .btn-mini.edit-score:hover { border-color: var(--accent-4); color: var(--accent-4); }
+  .btn-mini.confirm-score { border-color: var(--accent); color: var(--accent); }
+  .btn-mini.confirm-score:hover { background: var(--accent); color: #0a0d12; }
+  .btn-mini.cancel-score { border-color: var(--border-soft); color: var(--text-faint); }
+
+  /* Manual score entry — knockout */
+  .ko-card.editing { cursor: default; }
+  .ko-manual-actions, .ko-regen-area {
+    border-top: 1px dashed var(--border);
+    padding-top: 4px; display: flex; justify-content: center;
+  }
+  .btn-mini.edit-ko {
+    font-size: 8px; padding: 4px 6px; background: transparent;
+    border-color: var(--border-soft); color: var(--text-faint); letter-spacing: .1em;
+  }
+  .btn-mini.edit-ko:hover { border-color: var(--accent-4); color: var(--accent-4); }
+  .btn-mini.regen-ko {
+    font-size: 8px; padding: 4px 6px; background: transparent;
+    border-color: var(--border-soft); color: var(--text-faint); letter-spacing: .1em;
+  }
+  .btn-mini.regen-ko:hover:not(:disabled) { border-color: var(--accent-3); color: var(--accent-3); }
+  .btn-mini.regen-ko:disabled { opacity: .35; cursor: not-allowed; }
+  .ko-manual-form {
+    border-top: 1px dashed var(--border); padding-top: 6px;
+    display: flex; flex-direction: column; gap: 6px; align-items: center;
+  }
+  .ko-manual-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 8px;
+    letter-spacing: .15em; text-transform: uppercase;
+    color: var(--text-faint); text-align: center;
+  }
+  .ko-manual-row { display: flex; align-items: center; gap: 4px; justify-content: center; }
+  .ko-manual-row .sep { color: var(--text-faint); }
+  .ko-manual-btns { display: flex; gap: 4px; }
+  .ko-manual-pk-btns { display: flex; gap: 4px; flex-wrap: wrap; justify-content: center; }
+  .btn-mini.confirm-ko {
+    font-size: 8px; padding: 4px 8px; border-color: var(--accent); color: var(--accent);
+  }
+  .btn-mini.confirm-ko:hover { background: var(--accent); color: #0a0d12; }
+  .btn-mini.cancel-ko {
+    font-size: 8px; padding: 4px 8px;
+    background: transparent; border-color: var(--border-soft); color: var(--text-faint);
+  }
+  .btn-mini.pk-winner {
+    font-size: 8px; padding: 4px 8px; border-color: var(--accent-2); color: var(--accent-2);
+  }
+  .btn-mini.pk-winner:hover { background: var(--accent-2); color: #0a0d12; }
+
   /* Mini-PK dots inside bracket card */
   .ko-pk-mini {
     border-top: 1px dashed var(--border);
@@ -1998,6 +2066,9 @@ function buildFixtures() {
 }
 
 let activeGroup = 'A';
+let groupEditingIdx = null;
+let koManualMatch = null;
+let koManualStage = null; // 'regular' | 'et' | 'pk'
 function isGroupPlayed(g) { return fixtures[g].every(m => m.played); }
 function areAllGroupsPlayed() { return GROUPS.every(isGroupPlayed); }
 
@@ -2008,7 +2079,7 @@ function buildTabs() {
     btn.className = 'gtab' + (g === activeGroup ? ' active' : '') + (isGroupPlayed(g) ? ' played' : '');
     btn.textContent = `Grupo ${g}`;
     btn.dataset.group = g;
-    btn.addEventListener('click', () => { activeGroup = g; buildTabs(); renderGroup(); });
+    btn.addEventListener('click', () => { activeGroup = g; groupEditingIdx = null; buildTabs(); renderGroup(); });
     groupsTabs.appendChild(btn);
   });
 }
@@ -2115,7 +2186,19 @@ function renderGroup() {
     const row = document.createElement('div');
     row.className = 'match-row';
     let scoreHtml, btnHtml;
-    if (m.played) {
+    if (groupEditingIdx === idx) {
+      scoreHtml = `
+        <div class="score-edit-inline">
+          <input type="number" min="0" max="30" value="${m.played ? m.goalsA : 0}" class="score-in" id="sge-a-${idx}">
+          <span class="sep">:</span>
+          <input type="number" min="0" max="30" value="${m.played ? m.goalsB : 0}" class="score-in" id="sge-b-${idx}">
+        </div>`;
+      btnHtml = `
+        <div class="match-btns">
+          <button class="btn-mini confirm-score" data-confirm="${idx}">✓</button>
+          <button class="btn-mini cancel-score" data-cancel="${idx}">✗</button>
+        </div>`;
+    } else if (m.played) {
       let cls = 'played';
       if (m.outcome === 'A') cls += ' win-a';
       else if (m.outcome === 'B') cls += ' win-b';
@@ -2123,10 +2206,17 @@ function renderGroup() {
       scoreHtml = `<div class="score-mini ${cls}"><span class="a">${m.goalsA}</span> · <span class="b">${m.goalsB}</span></div>`;
       btnHtml = m.fixed
         ? `<button class="btn-mini played" disabled title="Resultado oficial">✓ Oficial</button>`
-        : `<button class="btn-mini played" data-idx="${idx}">↻ Re-sim</button>`;
+        : `<div class="match-btns">
+             <button class="btn-mini played" data-idx="${idx}">↻ Re-sim</button>
+             <button class="btn-mini edit-score" data-edit="${idx}" title="Editar placar">✏ Editar</button>
+           </div>`;
     } else {
       scoreHtml = `<div class="score-mini">– · –</div>`;
-      btnHtml = `<button class="btn-mini" data-idx="${idx}">▶ Simular</button>`;
+      btnHtml = `
+        <div class="match-btns">
+          <button class="btn-mini" data-idx="${idx}">▶ Simular</button>
+          <button class="btn-mini edit-score" data-edit="${idx}" title="Inserir placar">✏ Inserir</button>
+        </div>`;
     }
     const aCls = m.played ? (m.outcome === 'A' ? 'played-winner' : m.outcome === 'B' ? 'played-loser' : '') : '';
     const bCls = m.played ? (m.outcome === 'B' ? 'played-winner' : m.outcome === 'A' ? 'played-loser' : '') : '';
@@ -2154,9 +2244,31 @@ function renderGroup() {
       const sim = simulateMatch(m.a, m.b);
       m.played = true;
       m.goalsA = sim.goalsA; m.goalsB = sim.goalsB; m.outcome = sim.outcome;
+      groupEditingIdx = null;
       renderGroup();
       buildTabs();
       onGroupsChange();
+    });
+  });
+  matchesBody.querySelectorAll('.edit-score[data-edit]').forEach(b => {
+    b.addEventListener('click', () => {
+      groupEditingIdx = +b.dataset.edit;
+      renderGroup();
+    });
+  });
+  matchesBody.querySelectorAll('.confirm-score[data-confirm]').forEach(b => {
+    b.addEventListener('click', () => {
+      const idx = +b.dataset.confirm;
+      const ga = parseInt(document.getElementById(`sge-a-${idx}`).value, 10);
+      const gb = parseInt(document.getElementById(`sge-b-${idx}`).value, 10);
+      if (isNaN(ga) || isNaN(gb) || ga < 0 || gb < 0) return;
+      applyManualGroupScore(activeGroup, idx, ga, gb);
+    });
+  });
+  matchesBody.querySelectorAll('.cancel-score[data-cancel]').forEach(b => {
+    b.addEventListener('click', () => {
+      groupEditingIdx = null;
+      renderGroup();
     });
   });
   renderStandings();
@@ -2254,6 +2366,18 @@ function renderBestThirds() {
   });
 }
 
+function applyManualGroupScore(group, idx, goalsA, goalsB) {
+  const m = fixtures[group][idx];
+  m.played = true;
+  m.goalsA = Math.floor(goalsA);
+  m.goalsB = Math.floor(goalsB);
+  m.outcome = m.goalsA > m.goalsB ? 'A' : m.goalsA < m.goalsB ? 'B' : 'D';
+  groupEditingIdx = null;
+  renderGroup();
+  buildTabs();
+  onGroupsChange();
+}
+
 function resetMatch(m) {
   if (m.fixed) return;
   m.played = false; delete m.goalsA; delete m.goalsB; delete m.outcome;
@@ -2266,18 +2390,22 @@ function simMatch(m) {
 }
 
 btnAll.addEventListener('click', () => {
+  groupEditingIdx = null;
   fixtures[activeGroup].forEach(simMatch);
   renderGroup(); buildTabs(); onGroupsChange();
 });
 btnReset.addEventListener('click', () => {
+  groupEditingIdx = null;
   fixtures[activeGroup].forEach(resetMatch);
   renderGroup(); buildTabs(); onGroupsChange();
 });
 btnSimAll.addEventListener('click', () => {
+  groupEditingIdx = null;
   GROUPS.forEach(g => fixtures[g].forEach(simMatch));
   renderGroup(); buildTabs(); onGroupsChange();
 });
 btnResetAll.addEventListener('click', () => {
+  groupEditingIdx = null;
   GROUPS.forEach(g => fixtures[g].forEach(resetMatch));
   resetKnockout();
   renderGroup(); buildTabs(); onGroupsChange();
@@ -2516,6 +2644,78 @@ function takeKnockoutKick(matchId) {
   renderKnockout();
 }
 
+function canRegenerate(matchId) {
+  for (const def of BRACKET_DEF) {
+    for (const slot of ['a', 'b']) {
+      const ref = def[slot];
+      if ((ref.from === 'winner' || ref.from === 'loser') && ref.match === matchId) {
+        if (ko[def.id] && ko[def.id].played) return false;
+      }
+    }
+  }
+  return true;
+}
+
+function regenerateKoMatch(matchId) {
+  const m = ko[matchId];
+  const teamA = m.a, teamB = m.b;
+  BRACKET_DEF.forEach(def => {
+    ['a', 'b'].forEach(slot => {
+      const ref = def[slot];
+      if ((ref.from === 'winner' || ref.from === 'loser') && ref.match === matchId) {
+        ko[def.id][slot] = null;
+      }
+    });
+  });
+  ko[matchId] = {
+    id: matchId, round: m.round, def: m.def,
+    a: teamA, b: teamB,
+    played: false, goalsA: 0, goalsB: 0,
+    outcome: null, winner: null, loser: null,
+    shootout: null, pkWaiting: false, etWaiting: false, hadExtraTime: false
+  };
+  koManualMatch = null; koManualStage = null;
+  renderKnockout();
+}
+
+function applyManualKoRegular(matchId, goalsA, goalsB) {
+  const m = ko[matchId];
+  m.played = true;
+  m.regularA = goalsA; m.regularB = goalsB;
+  m.goalsA = goalsA; m.goalsB = goalsB;
+  m.hadExtraTime = false;
+  if (goalsA > goalsB)      { m.outcome = 'A'; m.winner = m.a; m.loser = m.b; }
+  else if (goalsB > goalsA) { m.outcome = 'B'; m.winner = m.b; m.loser = m.a; }
+  else { m.outcome = 'D'; m.etWaiting = true; m.winner = null; m.loser = null; }
+  koManualMatch = null; koManualStage = null;
+  if (m.winner) advanceWinner(matchId);
+  renderKnockout();
+}
+
+function applyManualKoET(matchId, etA, etB) {
+  const m = ko[matchId];
+  m.extraA = etA; m.extraB = etB;
+  m.goalsA = m.regularA + etA; m.goalsB = m.regularB + etB;
+  m.hadExtraTime = true; m.etWaiting = false;
+  if (m.goalsA > m.goalsB)      { m.winner = m.a; m.loser = m.b; }
+  else if (m.goalsB > m.goalsA) { m.winner = m.b; m.loser = m.a; }
+  else { m.pkWaiting = true; m.winner = null; m.loser = null; }
+  koManualMatch = null; koManualStage = null;
+  if (m.winner) advanceWinner(matchId);
+  renderKnockout();
+}
+
+function applyManualKoPK(matchId, winner) {
+  const m = ko[matchId];
+  m.pkWaiting = false;
+  m.shootout = { a: m.a, b: m.b, kicksA: [], kicksB: [], decided: true, winner, nextKicker: 'A' };
+  if (winner === 'A') { m.winner = m.a; m.loser = m.b; }
+  else               { m.winner = m.b; m.loser = m.a; }
+  koManualMatch = null; koManualStage = null;
+  advanceWinner(matchId);
+  renderKnockout();
+}
+
 function resetKnockout() {
   ko = null;
   document.getElementById('knockoutBracket').style.display = 'none';
@@ -2717,13 +2917,13 @@ function renderBracketCard(m, side) {
     }
   }
 
-  // Card state classes
   const ready = m.a && m.b && !m.played;
   const etReady = m.etWaiting;
   const penReady = m.pkWaiting;
   const penActive = m.shootout && !m.shootout.decided;
   const done = m.played && m.winner;
   const notReady = !m.a || !m.b;
+  const hasManualForm = koManualMatch === m.id;
 
   const cardCls = [
     'ko-card',
@@ -2732,43 +2932,94 @@ function renderBracketCard(m, side) {
     m.round === '3RD' ? 'third-card' : '',
     notReady ? 'not-ready' : '',
     done ? 'done' : '',
-    (ready || etReady || penReady || penActive) ? 'clickable' : '',
+    (ready || etReady || penReady || penActive) && !hasManualForm ? 'clickable' : '',
     (etReady || penReady || penActive) ? 'pen-ready' : '',
-    penActive ? 'pen-active' : ''
+    penActive && !hasManualForm ? 'pen-active' : '',
+    hasManualForm ? 'editing' : ''
   ].filter(Boolean).join(' ');
 
-  // Status line
   let statusHtml = '';
-  if (notReady) {
-    statusHtml = `<div class="ko-status">Aguardando</div>`;
-  } else if (ready) {
-    statusHtml = `<div class="ko-status play">▶ Clique para simular</div>`;
-  } else if (etReady) {
-    statusHtml = `<div class="ko-status pen">⏱ Empate no 90' (${m.regularA}–${m.regularB}) · clique p/ prorrogação</div>`;
-  } else if (penReady) {
-    statusHtml = `<div class="ko-status pen">⚽ Empate após pror. · clique p/ pênaltis</div>`;
-  } else if (penActive) {
-    const s = m.shootout;
-    const next = s.nextKicker === 'A' ? s.a : s.b;
-    const kicks = s.nextKicker === 'A' ? s.kicksA.length : s.kicksB.length;
-    statusHtml = `<div class="ko-status pen">▶ Cobrança ${kicks + 1} · ${next.nome}</div>`;
-  } else if (done) {
-    if (m.shootout) {
-      const ga = pkScore(m.shootout.kicksA), gb = pkScore(m.shootout.kicksB);
-      statusHtml = `<div class="ko-status done">Pênaltis ${ga}–${gb}</div>`;
-    } else if (m.hadExtraTime) {
-      statusHtml = `<div class="ko-status done">Decidido na prorrogação · ${m.regularA}–${m.regularB} no 90'</div>`;
-    } else {
-      statusHtml = `<div class="ko-status done">${m.winner.nome} avança</div>`;
+  let extraHtml = '';
+
+  if (hasManualForm) {
+    if (koManualStage === 'regular') {
+      statusHtml = `
+        <div class="ko-manual-form">
+          <div class="ko-manual-label">Placar (90')</div>
+          <div class="ko-manual-row">
+            <input type="number" min="0" max="30" value="0" class="score-in" id="ko-a-${m.id}">
+            <span class="sep">:</span>
+            <input type="number" min="0" max="30" value="0" class="score-in" id="ko-b-${m.id}">
+          </div>
+          <div class="ko-manual-btns">
+            <button class="btn-mini confirm-ko" data-mid="${m.id}" data-stage="regular">✓ Ok</button>
+            <button class="btn-mini cancel-ko" data-mid="${m.id}">✗</button>
+          </div>
+        </div>`;
+    } else if (koManualStage === 'et') {
+      statusHtml = `
+        <div class="ko-manual-form">
+          <div class="ko-manual-label">Gols na prorrogação</div>
+          <div class="ko-manual-row">
+            <input type="number" min="0" max="10" value="0" class="score-in" id="ko-a-${m.id}">
+            <span class="sep">:</span>
+            <input type="number" min="0" max="10" value="0" class="score-in" id="ko-b-${m.id}">
+          </div>
+          <div class="ko-manual-btns">
+            <button class="btn-mini confirm-ko" data-mid="${m.id}" data-stage="et">✓ Ok</button>
+            <button class="btn-mini cancel-ko" data-mid="${m.id}">✗</button>
+          </div>
+        </div>`;
+    } else if (koManualStage === 'pk') {
+      statusHtml = `
+        <div class="ko-manual-form">
+          <div class="ko-manual-label">Vencedor nos pênaltis</div>
+          <div class="ko-manual-pk-btns">
+            <button class="btn-mini pk-winner" data-mid="${m.id}" data-winner="A">${m.a ? m.a.nome : '?'}</button>
+            <button class="btn-mini pk-winner" data-mid="${m.id}" data-winner="B">${m.b ? m.b.nome : '?'}</button>
+          </div>
+          <div class="ko-manual-btns">
+            <button class="btn-mini cancel-ko" data-mid="${m.id}">✗ Cancelar</button>
+          </div>
+        </div>`;
+    }
+  } else {
+    if (notReady) {
+      statusHtml = `<div class="ko-status">Aguardando</div>`;
+    } else if (ready) {
+      statusHtml = `<div class="ko-status play">▶ Clique para simular</div>`;
+      extraHtml = `<div class="ko-manual-actions"><button class="btn-mini edit-ko" data-mid="${m.id}" data-stage="regular">✏ Inserir placar</button></div>`;
+    } else if (etReady) {
+      statusHtml = `<div class="ko-status pen">⏱ Empate no 90' (${m.regularA}–${m.regularB}) · clique p/ prorrogação</div>`;
+      extraHtml = `<div class="ko-manual-actions"><button class="btn-mini edit-ko" data-mid="${m.id}" data-stage="et">✏ Inserir prorrogação</button></div>`;
+    } else if (penReady) {
+      statusHtml = `<div class="ko-status pen">⚽ Empate após pror. · clique p/ pênaltis</div>`;
+      extraHtml = `<div class="ko-manual-actions"><button class="btn-mini edit-ko" data-mid="${m.id}" data-stage="pk">✏ Definir vencedor</button></div>`;
+    } else if (penActive) {
+      const s = m.shootout;
+      const next = s.nextKicker === 'A' ? s.a : s.b;
+      const kicks = s.nextKicker === 'A' ? s.kicksA.length : s.kicksB.length;
+      statusHtml = `<div class="ko-status pen">▶ Cobrança ${kicks + 1} · ${next.nome}</div>`;
+    } else if (done) {
+      if (m.shootout) {
+        const ga = pkScore(m.shootout.kicksA), gb = pkScore(m.shootout.kicksB);
+        statusHtml = `<div class="ko-status done">Pênaltis ${ga}–${gb}</div>`;
+      } else if (m.hadExtraTime) {
+        statusHtml = `<div class="ko-status done">Decidido na prorrogação · ${m.regularA}–${m.regularB} no 90'</div>`;
+      } else {
+        statusHtml = `<div class="ko-status done">${m.winner.nome} avança</div>`;
+      }
+      const canRegen = canRegenerate(m.id);
+      extraHtml = `<div class="ko-regen-area"><button class="btn-mini regen-ko" data-mid="${m.id}" ${canRegen ? '' : 'disabled title="Próximo jogo já disputado"'}>↻ Regerar</button></div>`;
     }
   }
 
-  // Click handler attached after render
-  const dataAction = penActive ? 'kick'
-                  : penReady    ? 'startpk'
-                  : etReady     ? 'playet'
-                  : ready       ? 'play'
-                  : '';
+  const dataAction = hasManualForm ? ''
+    : penActive ? 'kick'
+    : penReady  ? 'startpk'
+    : etReady   ? 'playet'
+    : ready     ? 'play'
+    : '';
 
   const idLabel = `${m.id} · ${ROUND_LABELS[m.round]}`;
 
@@ -2779,6 +3030,7 @@ function renderBracketCard(m, side) {
       ${renderTeamLine(m.b, m.played ? m.goalsB : null, bIsWinner, bIsLoser, pkB)}
       ${(m.shootout) ? renderMiniPK(m) : ''}
       ${statusHtml}
+      ${extraHtml}
     </div>
   `;
 }
@@ -2836,13 +3088,60 @@ function renderKnockout() {
     });
   });
 
+  // Manual entry — open form
+  root.querySelectorAll('.edit-ko[data-mid]').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      koManualMatch = btn.dataset.mid;
+      koManualStage = btn.dataset.stage;
+      renderKnockout();
+    });
+  });
+  // Confirm manual score (regular or ET)
+  root.querySelectorAll('.confirm-ko[data-mid]').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const mid = btn.dataset.mid;
+      const stage = btn.dataset.stage;
+      const ga = parseInt(document.getElementById(`ko-a-${mid}`).value, 10) || 0;
+      const gb = parseInt(document.getElementById(`ko-b-${mid}`).value, 10) || 0;
+      if (stage === 'regular') applyManualKoRegular(mid, ga, gb);
+      else if (stage === 'et') applyManualKoET(mid, ga, gb);
+    });
+  });
+  // PK winner selection
+  root.querySelectorAll('.pk-winner[data-mid]').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      applyManualKoPK(btn.dataset.mid, btn.dataset.winner);
+    });
+  });
+  // Cancel manual form
+  root.querySelectorAll('.cancel-ko[data-mid]').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      koManualMatch = null; koManualStage = null;
+      renderKnockout();
+    });
+  });
+  // Regenerate match
+  root.querySelectorAll('.regen-ko[data-mid]').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      if (!btn.disabled) regenerateKoMatch(btn.dataset.mid);
+    });
+  });
+
   // "Simulate all matches in the current round" button
   const actionsRoot = document.getElementById('bracketActions');
   const currentRound = getCurrentRound();
   if (currentRound) {
     actionsRoot.style.display = '';
     actionsRoot.innerHTML = `<button class="btn-round" id="btnSimRound">⚡ Simular ${ROUND_LABELS[currentRound]}</button>`;
-    document.getElementById('btnSimRound').addEventListener('click', () => simulateAllInRound(currentRound));
+    document.getElementById('btnSimRound').addEventListener('click', () => {
+      koManualMatch = null; koManualStage = null;
+      simulateAllInRound(currentRound);
+    });
   } else {
     actionsRoot.style.display = 'none';
     actionsRoot.innerHTML = '';
