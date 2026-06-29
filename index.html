@@ -2419,6 +2419,12 @@ renderGroup();
  * KNOCKOUT BRACKET
  * ============================================================ */
 
+// Official results for knockout matches (matchId → [goalsA, goalsB] at full-time or ET).
+// Team 'a' and 'b' correspond to the BRACKET_DEF slot order.
+const KNOCKOUT_FIXED = {
+  'M73': [0, 1], // África do Sul 0-1 Canadá (28/06)
+};
+
 const BRACKET_DEF = [
   // ROUND OF 32
   { id:'M73', round:'R32', a:{from:'group', group:'A', pos:2}, b:{from:'group', group:'B', pos:2} },
@@ -3073,6 +3079,20 @@ function advanceWinner(matchId) {
 function playKnockoutMatch(matchId) {
   const m = ko[matchId];
   if (!m.a || !m.b) return;
+  const fixed = KNOCKOUT_FIXED[matchId];
+  if (fixed) {
+    m.played = true;
+    m.goalsA = fixed[0]; m.goalsB = fixed[1];
+    m.regularA = fixed[0]; m.regularB = fixed[1];
+    m.outcome = fixed[0] > fixed[1] ? 'A' : fixed[0] < fixed[1] ? 'B' : 'D';
+    m.hadExtraTime = false;
+    if (m.outcome === 'A')      { m.winner = m.a; m.loser = m.b; }
+    else if (m.outcome === 'B') { m.winner = m.b; m.loser = m.a; }
+    else { m.etWaiting = true; }
+    if (m.winner) advanceWinner(matchId);
+    renderKnockout();
+    return;
+  }
   const sim = simulateMatch(m.a, m.b);
   m.played = true;
   m.goalsA = sim.goalsA;
@@ -3244,6 +3264,32 @@ function getCurrentRound() {
 
 function resolveKnockoutMatch(m) {
   if (!m || !m.a || !m.b || m.played) return;
+  const fixed = KNOCKOUT_FIXED[m.id];
+  if (fixed) {
+    m.played = true;
+    m.goalsA = fixed[0]; m.goalsB = fixed[1];
+    m.regularA = fixed[0]; m.regularB = fixed[1];
+    m.outcome = fixed[0] > fixed[1] ? 'A' : fixed[0] < fixed[1] ? 'B' : 'D';
+    m.hadExtraTime = false; m.etWaiting = false; m.pkWaiting = false;
+    if (m.outcome === 'A')      { m.winner = m.a; m.loser = m.b; }
+    else if (m.outcome === 'B') { m.winner = m.b; m.loser = m.a; }
+    else {
+      const et = simulateExtraTime(m.a, m.b);
+      m.extraA = et.extraA; m.extraB = et.extraB;
+      m.goalsA = m.regularA + et.extraA; m.goalsB = m.regularB + et.extraB;
+      m.hadExtraTime = true;
+      if (m.goalsA > m.goalsB)      { m.winner = m.a; m.loser = m.b; }
+      else if (m.goalsB > m.goalsA) { m.winner = m.b; m.loser = m.a; }
+      else {
+        m.shootout = newShootout(m.a, m.b);
+        while (!m.shootout.decided) takeKick(m.shootout);
+        if (m.shootout.winner === 'A') { m.winner = m.a; m.loser = m.b; }
+        else                            { m.winner = m.b; m.loser = m.a; }
+      }
+    }
+    advanceWinner(m.id);
+    return;
+  }
   const sim = simulateMatch(m.a, m.b);
   m.played = true;
   m.regularA = sim.goalsA;
