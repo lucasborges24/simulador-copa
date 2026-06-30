@@ -2422,7 +2422,10 @@ renderGroup();
 // Official results for knockout matches (matchId → [goalsA, goalsB] at full-time or ET).
 // Team 'a' and 'b' correspond to the BRACKET_DEF slot order.
 const KNOCKOUT_FIXED = {
-  'M73': [0, 1], // África do Sul 0-1 Canadá (28/06)
+  'M73': [0, 1],       // África do Sul 0-1 Canadá (28/06)
+  'M74': [1, 1, 'B'],  // Alemanha 1-1 Paraguai (29/06) — Paraguai vence nos pênaltis
+  'M75': [1, 1, 'B'],  // Países Baixos 1-1 Marrocos (29/06) — Marrocos vence nos pênaltis
+  'M76': [2, 1],       // Brasil 2-1 Japão (29/06)
 };
 
 const BRACKET_DEF = [
@@ -3088,7 +3091,14 @@ function playKnockoutMatch(matchId) {
     m.hadExtraTime = false;
     if (m.outcome === 'A')      { m.winner = m.a; m.loser = m.b; }
     else if (m.outcome === 'B') { m.winner = m.b; m.loser = m.a; }
-    else { m.etWaiting = true; }
+    else if (fixed[2]) {
+      // ET ended 0-0, penalty winner pre-recorded
+      m.hadExtraTime = true; m.extraA = 0; m.extraB = 0;
+      m.goalsA = m.regularA; m.goalsB = m.regularB;
+      m.shootout = { a: m.a, b: m.b, kicksA: [], kicksB: [], decided: true, winner: fixed[2], nextKicker: 'A' };
+      if (fixed[2] === 'A') { m.winner = m.a; m.loser = m.b; }
+      else                  { m.winner = m.b; m.loser = m.a; }
+    } else { m.etWaiting = true; }
     if (m.winner) advanceWinner(matchId);
     renderKnockout();
     return;
@@ -3273,7 +3283,14 @@ function resolveKnockoutMatch(m) {
     m.hadExtraTime = false; m.etWaiting = false; m.pkWaiting = false;
     if (m.outcome === 'A')      { m.winner = m.a; m.loser = m.b; }
     else if (m.outcome === 'B') { m.winner = m.b; m.loser = m.a; }
-    else {
+    else if (fixed[2]) {
+      // ET ended 0-0, penalty winner pre-recorded
+      m.hadExtraTime = true; m.extraA = 0; m.extraB = 0;
+      m.goalsA = m.regularA; m.goalsB = m.regularB;
+      m.shootout = { a: m.a, b: m.b, kicksA: [], kicksB: [], decided: true, winner: fixed[2], nextKicker: 'A' };
+      if (fixed[2] === 'A') { m.winner = m.a; m.loser = m.b; }
+      else                  { m.winner = m.b; m.loser = m.a; }
+    } else {
       const et = simulateExtraTime(m.a, m.b);
       m.extraA = et.extraA; m.extraB = et.extraB;
       m.goalsA = m.regularA + et.extraA; m.goalsB = m.regularB + et.extraB;
