@@ -3463,7 +3463,7 @@ function onGroupsChange() {
   if (ko) resetKnockout();
 }
 
-document.getElementById('btnUnlockSim').addEventListener('click', () => {
+function openKnockout() {
   GROUPS.forEach(g => {
     fixtures[g].forEach(m => {
       if (!m.played) {
@@ -3480,7 +3480,12 @@ document.getElementById('btnUnlockSim').addEventListener('click', () => {
   document.getElementById('knockoutLocked').style.display = 'none';
   document.getElementById('knockoutBracket').style.display = 'block';
   renderKnockout();
-});
+}
+
+document.getElementById('btnUnlockSim').addEventListener('click', openKnockout);
+
+// Abre o mata-mata automaticamente ao carregar a página
+openKnockout();
 
 /* ============================================================
  * KNOCKOUT RENDERING — horizontal bracket
