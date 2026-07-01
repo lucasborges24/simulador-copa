@@ -1038,6 +1038,11 @@
   }
   .btn-mini.regen-ko:hover:not(:disabled) { border-color: var(--accent-3); color: var(--accent-3); }
   .btn-mini.regen-ko:disabled { opacity: .35; cursor: not-allowed; }
+  .ko-lock-badge {
+    font-family: 'JetBrains Mono', monospace; font-size: 8px;
+    letter-spacing: .1em; text-transform: uppercase;
+    color: var(--accent-2); opacity: .8;
+  }
   .ko-manual-form {
     border-top: 1px dashed var(--border); padding-top: 6px;
     display: flex; flex-direction: column; gap: 6px; align-items: center;
@@ -2419,14 +2424,42 @@ renderGroup();
  * KNOCKOUT BRACKET
  * ============================================================ */
 
-// Official results for knockout matches (matchId → [goalsA, goalsB] at full-time or ET).
-// Team 'a' and 'b' correspond to the BRACKET_DEF slot order.
-const KNOCKOUT_FIXED = {
-  'M73': [0, 1],       // África do Sul 0-1 Canadá (28/06)
-  'M74': [1, 1, 'B'],  // Alemanha 1-1 Paraguai (29/06) — Paraguai vence nos pênaltis
-  'M75': [1, 1, 'B'],  // Países Baixos 1-1 Marrocos (29/06) — Marrocos vence nos pênaltis
-  'M76': [2, 1],       // Brasil 2-1 Japão (29/06)
+// Times reais de cada jogo dos 16 avos (fase de grupos já encerrada).
+// Sobrescreve a atribuição simulada para garantir o chaveamento real.
+const FIXED_R32_TEAMS = {
+  'M73': { a: 'África do Sul',        b: 'Canadá'               }, // 28/jun
+  'M74': { a: 'Alemanha',             b: 'Paraguai'             }, // 29/jun
+  'M75': { a: 'Países Baixos',        b: 'Marrocos'             }, // 29/jun
+  'M76': { a: 'Brasil',               b: 'Japão'                }, // 29/jun
+  'M77': { a: 'França',               b: 'Suécia'               }, // 30/jun
+  'M78': { a: 'Costa do Marfim',      b: 'Noruega'              }, // 30/jun
+  'M79': { a: 'México',               b: 'Equador'              }, // 30/jun
+  'M80': { a: 'Inglaterra',           b: 'RD Congo'             }, // 01/jul
+  'M81': { a: 'Estados Unidos',       b: 'Bósnia e Herzegovina' }, // 01/jul
+  'M82': { a: 'Bélgica',              b: 'Senegal'              }, // 01/jul
+  'M83': { a: 'Portugal',             b: 'Croácia'              }, // 02/jul
+  'M84': { a: 'Espanha',              b: 'Áustria'              }, // 02/jul
+  'M85': { a: 'Suíça',                b: 'Argélia'              }, // 02/jul
+  'M86': { a: 'Argentina',            b: 'Cabo Verde'           }, // 03/jul
+  'M87': { a: 'Colômbia',             b: 'Gana'                 }, // 03/jul
+  'M88': { a: 'Austrália',            b: 'Egito'                }, // 03/jul
 };
+
+// Resultados reais já disputados — imutáveis no simulador.
+// regularA/B = gols no tempo normal; extraA/B = gols na prorrogação; pkWinner = 'A'|'B'|null
+const FIXED_KO_RESULTS = {
+  // 28/jun — Canadá 1-0 África do Sul
+  'M73': { regularA: 0, regularB: 1, hadET: false, extraA: 0, extraB: 0, pkWinner: null },
+  // 29/jun — Brasil 2-1 Japão
+  'M76': { regularA: 2, regularB: 1, hadET: false, extraA: 0, extraB: 0, pkWinner: null },
+  // 29/jun — Alemanha 1-1 Paraguai (pên. 3-4) → Paraguai vence
+  'M74': { regularA: 1, regularB: 1, hadET: true,  extraA: 0, extraB: 0, pkWinner: 'B' },
+  // 29/jun — Países Baixos 1-1 Marrocos (pên. 2-3) → Marrocos vence
+  'M75': { regularA: 1, regularB: 1, hadET: true,  extraA: 0, extraB: 0, pkWinner: 'B' },
+};
+
+// Shim: código legado do remote referencia KNOCKOUT_FIXED; applyFixedKoResults() já cuida dos resultados reais.
+const KNOCKOUT_FIXED = {};
 
 const BRACKET_DEF = [
   // ROUND OF 32
@@ -3066,6 +3099,49 @@ function generateKnockout() {
   });
 }
 
+function applyFixedR32Teams() {
+  const teamByName = n => TEAMS.find(t => t.nome === n) || null;
+  Object.entries(FIXED_R32_TEAMS).forEach(([matchId, teams]) => {
+    const m = ko[matchId];
+    if (!m) return;
+    m.a = teamByName(teams.a);
+    m.b = teamByName(teams.b);
+  });
+}
+
+function applyFixedKoResults() {
+  Object.entries(FIXED_KO_RESULTS).forEach(([matchId, res]) => {
+    const m = ko[matchId];
+    if (!m || !m.a || !m.b) return;
+    m.fixed = true;
+    m.played = true;
+    m.regularA = res.regularA;
+    m.regularB = res.regularB;
+    m.hadExtraTime = res.hadET;
+    m.extraA = res.extraA;
+    m.extraB = res.extraB;
+    m.goalsA = res.regularA + res.extraA;
+    m.goalsB = res.regularB + res.extraB;
+    if (res.pkWinner) {
+      // Kick arrays que reproduzem o placar real de pênaltis
+      const kicks = { 'M74': { A: [1,1,1,0], B: [1,1,1,1] }, 'M75': { A: [1,1,0], B: [1,1,1] } };
+      const k = kicks[matchId] || { A: [], B: [] };
+      m.shootout = {
+        a: m.a, b: m.b,
+        kicksA: k.A.map(v => !!v), kicksB: k.B.map(v => !!v),
+        decided: true, winner: res.pkWinner, nextKicker: 'A'
+      };
+      if (res.pkWinner === 'A') { m.winner = m.a; m.loser = m.b; }
+      else                       { m.winner = m.b; m.loser = m.a; }
+    } else if (m.goalsA > m.goalsB) {
+      m.outcome = 'A'; m.winner = m.a; m.loser = m.b;
+    } else {
+      m.outcome = 'B'; m.winner = m.b; m.loser = m.a;
+    }
+    advanceWinner(matchId);
+  });
+}
+
 function advanceWinner(matchId) {
   BRACKET_DEF.forEach(def => {
     ['a', 'b'].forEach(slot => {
@@ -3164,6 +3240,7 @@ function takeKnockoutKick(matchId) {
 }
 
 function canRegenerate(matchId) {
+  if (ko[matchId] && ko[matchId].fixed) return false;
   for (const def of BRACKET_DEF) {
     for (const slot of ['a', 'b']) {
       const ref = def[slot];
@@ -3177,6 +3254,7 @@ function canRegenerate(matchId) {
 
 function regenerateKoMatch(matchId) {
   const m = ko[matchId];
+  if (m.fixed) return;
   const teamA = m.a, teamB = m.b;
   BRACKET_DEF.forEach(def => {
     ['a', 'b'].forEach(slot => {
@@ -3397,6 +3475,8 @@ document.getElementById('btnUnlockSim').addEventListener('click', () => {
   });
   renderGroup(); buildTabs();
   generateKnockout();
+  applyFixedR32Teams();
+  applyFixedKoResults();
   document.getElementById('knockoutLocked').style.display = 'none';
   document.getElementById('knockoutBracket').style.display = 'block';
   renderKnockout();
@@ -3561,8 +3641,12 @@ function renderBracketCard(m, side) {
       } else {
         statusHtml = `<div class="ko-status done">${m.winner.nome} avança</div>`;
       }
-      const canRegen = canRegenerate(m.id);
-      extraHtml = `<div class="ko-regen-area"><button class="btn-mini regen-ko" data-mid="${m.id}" ${canRegen ? '' : 'disabled title="Próximo jogo já disputado"'}>↻ Regerar</button></div>`;
+      if (m.fixed) {
+        extraHtml = `<div class="ko-regen-area"><span class="ko-lock-badge">🔒 Resultado oficial</span></div>`;
+      } else {
+        const canRegen = canRegenerate(m.id);
+        extraHtml = `<div class="ko-regen-area"><button class="btn-mini regen-ko" data-mid="${m.id}" ${canRegen ? '' : 'disabled title="Próximo jogo já disputado"'}>↻ Regerar</button></div>`;
+      }
     }
   }
 
