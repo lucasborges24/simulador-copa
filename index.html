@@ -214,60 +214,6 @@
     margin-left: auto; max-width: 380px; text-align: right;
   }
 
-  /* QUICK SIM */
-  .sim-panel {
-    background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 36px; box-shadow: var(--shadow);
-    position: relative; overflow: hidden;
-  }
-  .sim-panel::before {
-    content: ""; position: absolute;
-    top: 0; left: 0; right: 0; height: 2px;
-    background: linear-gradient(90deg, var(--accent), var(--accent-4), var(--accent-3), var(--accent-2));
-    opacity: .8;
-  }
-  .matchup { display: grid; grid-template-columns: 1fr auto 1fr; gap: 28px; align-items: center; }
-  .team-pick { display: flex; flex-direction: column; gap: 14px; }
-  .team-pick.right { align-items: flex-end; }
-  .team-pick.right .team-card { text-align: right; }
-  .team-pick.right .team-card .flag-line { flex-direction: row-reverse; }
-  .pick-label {
-    font-family: 'JetBrains Mono', monospace; font-size: 10px;
-    letter-spacing: .25em; text-transform: uppercase; color: var(--text-faint);
-  }
-  .select-wrap { position: relative; width: 100%; }
-  select.team-select {
-    appearance: none; -webkit-appearance: none; width: 100%;
-    background: var(--bg-2); border: 1px solid var(--border);
-    color: var(--text); font-family: 'Manrope', sans-serif;
-    font-weight: 600; font-size: 15px;
-    padding: 14px 44px 14px 16px; border-radius: 10px;
-    cursor: pointer; transition: all .2s;
-  }
-  select.team-select:hover, select.team-select:focus {
-    border-color: var(--accent); outline: none; background: var(--surface);
-  }
-  .select-wrap::after {
-    content: "▾"; position: absolute; right: 14px; top: 50%;
-    transform: translateY(-50%); color: var(--accent);
-    pointer-events: none; font-size: 14px;
-  }
-  optgroup { color: var(--accent); font-style: normal; font-weight: 700; }
-  option { color: var(--text); background: var(--surface); font-weight: 500; }
-  .team-card {
-    background: var(--bg-2); border: 1px solid var(--border-soft);
-    border-radius: 12px; padding: 20px; min-height: 130px;
-    width: 100%;
-    transition: all .25s;
-  }
-  .team-card.active {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 1px rgba(0,245,160,.2), 0 12px 30px rgba(0,245,160,.08);
-  }
-  .team-card .flag-line { display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
-  .team-card .flag { font-size: 38px; line-height: 1; }
   /* Bandeiras via Twemoji (Windows não renderiza emoji de bandeira nativamente).
      A altura herda o font-size do container .flag/.sflag/.cflag/.f. */
   img.flag-img {
@@ -276,40 +222,6 @@
     display: inline-block;
     user-select: none; -webkit-user-drag: none;
   }
-  .team-card .name {
-    font-family: 'Bebas Neue', sans-serif; font-size: 30px;
-    line-height: 1; letter-spacing: .015em;
-  }
-  .team-card .stats {
-    display: flex; gap: 22px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px; color: var(--text-dim); margin-top: 12px;
-  }
-  .team-pick.right .team-card .stats { justify-content: flex-end; }
-  .team-card .stats .v { color: var(--text); font-weight: 700; font-size: 13px; }
-  .team-card .stats .lbl {
-    display: block; color: var(--text-faint);
-    letter-spacing: .12em; font-size: 9px;
-    text-transform: uppercase; margin-bottom: 2px;
-  }
-  .team-card .group-badge {
-    display: inline-block;
-    font-family: 'JetBrains Mono', monospace; font-size: 10px;
-    background: rgba(0,245,160,.12); color: var(--accent);
-    padding: 3px 8px; border-radius: 4px; letter-spacing: .15em;
-  }
-  .team-pick.right .team-card .group-badge { float: none; }
-  .vs {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 56px; color: var(--text-faint);
-    letter-spacing: .05em; padding: 0 8px; position: relative;
-  }
-  .vs::after {
-    content: ""; position: absolute; bottom: -10px;
-    left: 50%; transform: translateX(-50%);
-    width: 30px; height: 2px; background: var(--accent-3);
-  }
-  .sim-action { display: flex; justify-content: center; margin-top: 28px; }
   .btn-sim {
     background: var(--accent); color: #0a0d12; border: none;
     padding: 16px 48px; font-family: 'Bebas Neue', sans-serif;
@@ -326,148 +238,6 @@
   }
   .btn-sim:disabled:hover { transform: none; }
 
-  /* RESULT */
-  .result {
-    margin-top: 32px; background: var(--bg-2);
-    border: 1px solid var(--border); border-radius: 12px;
-    padding: 30px 24px; display: none;
-    animation: slideUp .5s cubic-bezier(.2,.7,.2,1);
-  }
-  .result.show { display: block; }
-  @keyframes slideUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes popIn {
-    from { opacity: 0; transform: scale(.6); }
-    to   { opacity: 1; transform: scale(1); }
-  }
-  .scoreboard { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 24px; }
-  .score-team { display: flex; flex-direction: column; gap: 6px; }
-  .score-team.left { text-align: right; align-items: flex-end; }
-  .score-team.right { text-align: left; align-items: flex-start; }
-  .score-team .sname {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 28px; letter-spacing: .02em;
-  }
-  .score-team .sflag { font-size: 32px; line-height: 1; }
-  .score-team .outcome {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px; letter-spacing: .2em;
-    padding: 3px 9px; border-radius: 4px;
-    text-transform: uppercase; margin-top: 4px;
-  }
-  .outcome.win  { background: rgba(0,245,160,.15);  color: var(--win); }
-  .outcome.lose { background: rgba(255,59,107,.12); color: var(--lose); }
-  .outcome.draw { background: rgba(255,210,63,.15); color: var(--draw); }
-  .score-numbers { display: flex; gap: 24px; align-items: center; font-family: 'Anton', sans-serif; }
-  .score-numbers .num {
-    font-size: 88px; line-height: .85;
-    color: var(--text); min-width: 70px;
-    text-align: center; transition: color .3s;
-  }
-  .score-numbers .num.winner { color: var(--accent); }
-  .score-numbers .num.loser  { color: var(--text-faint); }
-  .score-numbers .sep { font-size: 60px; color: var(--text-faint); padding-bottom: 8px; }
-  .sim-meta {
-    display: flex; justify-content: center; gap: 22px;
-    margin-top: 22px; padding-top: 18px;
-    border-top: 1px dashed var(--border);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px; color: var(--text-faint);
-    letter-spacing: .12em; text-transform: uppercase;
-    flex-wrap: wrap;
-  }
-  .sim-meta b { color: var(--text-dim); font-weight: 700; }
-  .sim-meta .chip {
-    padding: 4px 10px; background: var(--surface);
-    border-radius: 4px; border: 1px solid var(--border);
-  }
-  .sim-meta .chip.random {
-    background: rgba(255,59,107,.08); color: var(--accent-3);
-    border-color: rgba(255,59,107,.3);
-  }
-
-  /* PENALTY SHOOTOUT (quick sim) */
-  .pk-section { margin-top: 24px; padding-top: 24px; border-top: 1px dashed var(--border); }
-  .pk-trigger { display: flex; flex-direction: column; align-items: center; gap: 12px; }
-  .pk-trigger .pk-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 26px; letter-spacing: .08em; color: var(--accent-2);
-  }
-  .pk-trigger .pk-sub {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px; letter-spacing: .15em;
-    color: var(--text-faint); text-transform: uppercase;
-  }
-  .btn-pk {
-    background: transparent; border: 1px solid var(--accent-2); color: var(--accent-2);
-    padding: 12px 32px; font-family: 'Bebas Neue', sans-serif;
-    font-size: 18px; letter-spacing: .15em;
-    border-radius: 999px; cursor: pointer; transition: all .2s; margin-top: 8px;
-  }
-  .btn-pk:hover { background: var(--accent-2); color: #0a0d12; transform: translateY(-1px); }
-  .btn-pk.next { background: var(--accent-3); border-color: var(--accent-3); color: #fff; }
-  .btn-pk.next:hover { background: #ff5683; }
-  .pk-board { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 20px; }
-  .pk-side {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 12px; padding: 18px 20px;
-  }
-  .pk-side.winner {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 1px rgba(0,245,160,.18), 0 10px 24px rgba(0,245,160,.08);
-  }
-  .pk-side.loser { opacity: .65; }
-  .pk-head {
-    display: flex; align-items: center; justify-content: space-between;
-    gap: 10px; margin-bottom: 12px;
-  }
-  .pk-team {
-    display: flex; align-items: center; gap: 10px;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 22px; letter-spacing: .02em;
-  }
-  .pk-team .f { font-size: 24px; }
-  .pk-score {
-    font-family: 'Anton', sans-serif; font-size: 38px; line-height: 1;
-    color: var(--text); min-width: 36px; text-align: right;
-  }
-  .pk-side.winner .pk-score { color: var(--accent); }
-  .pk-dots { display: flex; gap: 7px; flex-wrap: wrap; }
-  .pk-dot {
-    width: 22px; height: 22px; border-radius: 50%;
-    border: 1px solid var(--border); background: var(--bg-2);
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'JetBrains Mono', monospace; font-size: 10px;
-    color: var(--text-faint); font-weight: 700; transition: all .2s;
-  }
-  .pk-dot.goal {
-    background: rgba(0,245,160,.18); border-color: var(--accent);
-    color: var(--accent); animation: popIn .35s cubic-bezier(.2,.9,.4,1.4);
-  }
-  .pk-dot.miss {
-    background: rgba(255,59,107,.13); border-color: var(--accent-3);
-    color: var(--accent-3); animation: popIn .35s cubic-bezier(.2,.9,.4,1.4);
-  }
-  .pk-dot.next {
-    border-color: var(--accent-2); color: var(--accent-2);
-    animation: pulse 1.4s ease-in-out infinite;
-  }
-  @keyframes pulse {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(255,210,63,0); }
-    50%      { box-shadow: 0 0 0 4px rgba(255,210,63,.25); }
-  }
-  .pk-status {
-    text-align: center; margin-top: 18px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px; color: var(--text-dim);
-    letter-spacing: .15em; text-transform: uppercase;
-    min-height: 16px;
-  }
-  .pk-status.sudden  { color: var(--accent-3); }
-  .pk-status.decided { color: var(--accent); font-weight: 700; }
-  .pk-action { display: flex; justify-content: center; margin-top: 16px; gap: 12px; }
 
   /* GROUPS */
   .groups-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
@@ -1254,33 +1024,24 @@
     </div>
   </div>
 
-  <!-- 01 QUICK SIM -->
+  <!-- 01 KNOCKOUT -->
   <section>
     <div class="section-head">
       <span class="num">01 /</span>
-      <h2>SIMULAÇÃO RÁPIDA</h2>
-      <span class="desc">Qualquer time contra qualquer time. Empate libera disputa de pênaltis.</span>
+      <h2>MATA-MATA</h2>
+      <span class="desc">Chaveamento oficial FIFA. Empate → prorrogação 30 min → pênaltis se persistir.</span>
     </div>
 
-    <div class="sim-panel">
-      <div class="matchup">
-        <div class="team-pick left">
-          <span class="pick-label">— Mandante</span>
-          <div class="select-wrap"><select id="selA" class="team-select"></select></div>
-          <div id="cardA" class="team-card"></div>
-        </div>
-        <div class="vs">VS</div>
-        <div class="team-pick right">
-          <span class="pick-label">Visitante —</span>
-          <div class="select-wrap"><select id="selB" class="team-select"></select></div>
-          <div id="cardB" class="team-card"></div>
-        </div>
-      </div>
-      <div class="sim-action">
-        <button id="btnSim" class="btn-sim">▶ Simular partida</button>
-      </div>
-      <div id="result" class="result"></div>
+    <div id="knockoutLocked" class="knockout-locked">
+      <div class="lock-title">🔒 Mata-mata bloqueado</div>
+      <div class="lock-sub">Termine a fase de grupos para liberar o chaveamento. Os 12 primeiros, 12 segundos e os 8 melhores 3º colocados são distribuídos automaticamente.</div>
+      <button id="btnUnlockSim" class="btn-sim">⚡ Simular grupos e abrir mata-mata</button>
     </div>
+
+    <div id="bracketActions" class="bracket-actions" style="display:none;"></div>
+    <div id="knockoutBracket" style="display:none;"></div>
+    <div class="bracket-hint" id="bracketHint">↔ arraste horizontalmente para ver o chaveamento completo</div>
+    <div id="championCard" class="champion-card"></div>
   </section>
 
   <!-- 02 GROUP STAGE -->
@@ -1361,25 +1122,6 @@
     </div>
   </section>
 
-  <!-- 03 KNOCKOUT -->
-  <section>
-    <div class="section-head">
-      <span class="num">03 /</span>
-      <h2>MATA-MATA</h2>
-      <span class="desc">Chaveamento oficial FIFA. Empate → prorrogação 30 min → pênaltis se persistir.</span>
-    </div>
-
-    <div id="knockoutLocked" class="knockout-locked">
-      <div class="lock-title">🔒 Mata-mata bloqueado</div>
-      <div class="lock-sub">Termine a fase de grupos para liberar o chaveamento. Os 12 primeiros, 12 segundos e os 8 melhores 3º colocados são distribuídos automaticamente.</div>
-      <button id="btnUnlockSim" class="btn-sim">⚡ Simular grupos e abrir mata-mata</button>
-    </div>
-
-    <div id="bracketActions" class="bracket-actions" style="display:none;"></div>
-    <div id="knockoutBracket" style="display:none;"></div>
-    <div class="bracket-hint" id="bracketHint">↔ arraste horizontalmente para ver o chaveamento completo</div>
-    <div id="championCard" class="champion-card"></div>
-  </section>
 
 </div>
 
@@ -1732,270 +1474,7 @@ function takeKick(s) {
   return { side, made, kickIdx, inSuddenDeath };
 }
 
-/* ============================================================
- * QUICK SIM UI
- * ============================================================ */
-
-const selA = document.getElementById('selA');
-const selB = document.getElementById('selB');
-const cardA = document.getElementById('cardA');
-const cardB = document.getElementById('cardB');
-const btnSim = document.getElementById('btnSim');
-const resultEl = document.getElementById('result');
-
-function buildSelect(select, defaultName) {
-  const groups = {};
-  TEAMS.forEach(t => { (groups[t.grupo] = groups[t.grupo] || []).push(t); });
-  Object.keys(groups).sort().forEach(g => {
-    const og = document.createElement('optgroup');
-    og.label = `Grupo ${g}`;
-    groups[g].forEach(t => {
-      const opt = document.createElement('option');
-      opt.value = t.nome;
-      opt.textContent = `${t.nome} · #${t.pos}`;
-      if (t.nome === defaultName) opt.selected = true;
-      og.appendChild(opt);
-    });
-    select.appendChild(og);
-  });
-}
-
-function renderTeamCard(el, t, active = false) {
-  if (!t) { el.innerHTML = ''; return; }
-  el.classList.toggle('active', active);
-  el.innerHTML = `
-    <span class="group-badge">Grupo ${t.grupo}</span>
-    <div class="flag-line">
-      <span class="flag">${flagImg(t.flag)}</span>
-      <span class="name">${t.nome.toUpperCase()}</span>
-    </div>
-    <div class="stats">
-      <div><span class="lbl">FIFA</span><span class="v">#${t.pos}</span></div>
-      <div><span class="lbl">Pontos</span><span class="v">${t.pts.toFixed(1)}</span></div>
-    </div>
-  `;
-}
-
 function teamByName(n) { return TEAMS.find(t => t.nome === n); }
-
-function refreshCards() {
-  const a = teamByName(selA.value);
-  const b = teamByName(selB.value);
-  renderTeamCard(cardA, a, true);
-  renderTeamCard(cardB, b, true);
-  btnSim.disabled = !a || !b || a.nome === b.nome;
-}
-
-let quickPK = null;
-
-function renderResult(a, b, sim) {
-  const { goalsA, goalsB, outcome, random, probs } = sim;
-  let outA, outB, classA, classB;
-  if (outcome === 'A')      { outA = 'Vitória'; outB = 'Derrota'; classA = 'win'; classB = 'lose'; }
-  else if (outcome === 'B') { outA = 'Derrota'; outB = 'Vitória'; classA = 'lose'; classB = 'win'; }
-  else                      { outA = outB = 'Empate'; classA = classB = 'draw'; }
-  const numA = outcome === 'A' ? 'winner' : outcome === 'B' ? 'loser' : '';
-  const numB = outcome === 'B' ? 'winner' : outcome === 'A' ? 'loser' : '';
-
-  resultEl.classList.remove('show');
-  void resultEl.offsetWidth;
-
-  resultEl.innerHTML = `
-    <div class="scoreboard">
-      <div class="score-team left">
-        <span class="sflag">${flagImg(a.flag)}</span>
-        <span class="sname">${a.nome.toUpperCase()}</span>
-        <span class="outcome ${classA}">${outA}</span>
-      </div>
-      <div class="score-numbers">
-        <span class="num ${numA}">${goalsA}</span>
-        <span class="sep">·</span>
-        <span class="num ${numB}">${goalsB}</span>
-      </div>
-      <div class="score-team right">
-        <span class="sflag">${flagImg(b.flag)}</span>
-        <span class="sname">${b.nome.toUpperCase()}</span>
-        <span class="outcome ${classB}">${outB}</span>
-      </div>
-    </div>
-    <div class="sim-meta">
-      <span class="chip"><b>P(${a.nome.split(' ')[0]}):</b> ${(probs.aWin*100).toFixed(0)}%</span>
-      <span class="chip"><b>P(Empate):</b> ${(probs.draw*100).toFixed(0)}%</span>
-      <span class="chip"><b>P(${b.nome.split(' ')[0]}):</b> ${(probs.bWin*100).toFixed(0)}%</span>
-      ${random ? '<span class="chip random">⚡ Resultado aleatório (15%)</span>' : ''}
-    </div>
-    ${outcome === 'D' ? `
-      <div class="pk-section" id="pkSection">
-        <div class="pk-trigger">
-          <span class="pk-title">EMPATE NO TEMPO NORMAL</span>
-          <span class="pk-sub">— Mata-mata exige decisão: prorrogação primeiro, pênaltis se persistir —</span>
-          <button id="btnForceDecide" class="btn-pk">▶ Forçar decisão (prorrogação)</button>
-        </div>
-      </div>
-    ` : ''}
-  `;
-  resultEl.classList.add('show');
-
-  if (outcome === 'D') {
-    document.getElementById('btnForceDecide').addEventListener('click', () => forceDecideQuick(a, b, goalsA, goalsB));
-  }
-  quickPK = null;
-}
-
-/**
- * Quick-sim "force decision" flow:
- * 1. Show that 90' ended tied
- * 2. Simulate extra time and add to score
- * 3. If decided, end with "after ET" label
- * 4. If still tied, open penalty shootout UI
- */
-function forceDecideQuick(a, b, regA, regB) {
-  const et = simulateExtraTime(a, b);
-  const finalA = regA + et.extraA;
-  const finalB = regB + et.extraB;
-
-  // Update the main scoreboard with the ET-updated score
-  const numEls = resultEl.querySelectorAll('.score-numbers .num');
-  if (numEls[0]) numEls[0].textContent = finalA;
-  if (numEls[1]) numEls[1].textContent = finalB;
-
-  // Update outcome labels
-  const outcomeEls = resultEl.querySelectorAll('.score-team .outcome');
-  if (finalA > finalB) {
-    if (numEls[0]) numEls[0].className = 'num winner';
-    if (numEls[1]) numEls[1].className = 'num loser';
-    if (outcomeEls[0]) { outcomeEls[0].className = 'outcome win'; outcomeEls[0].textContent = 'Vitória (pror.)'; }
-    if (outcomeEls[1]) { outcomeEls[1].className = 'outcome lose'; outcomeEls[1].textContent = 'Derrota (pror.)'; }
-    showETResolved(a, b, regA, regB, et);
-  } else if (finalB > finalA) {
-    if (numEls[1]) numEls[1].className = 'num winner';
-    if (numEls[0]) numEls[0].className = 'num loser';
-    if (outcomeEls[1]) { outcomeEls[1].className = 'outcome win'; outcomeEls[1].textContent = 'Vitória (pror.)'; }
-    if (outcomeEls[0]) { outcomeEls[0].className = 'outcome lose'; outcomeEls[0].textContent = 'Derrota (pror.)'; }
-    showETResolved(a, b, regA, regB, et);
-  } else {
-    showETStillTied(a, b, regA, regB, et);
-  }
-}
-
-function showETResolved(a, b, regA, regB, et) {
-  const sec = document.getElementById('pkSection');
-  sec.innerHTML = `
-    <div class="pk-trigger">
-      <span class="pk-title" style="color:var(--accent);">DECIDIDO NA PRORROGAÇÃO</span>
-      <span class="pk-sub">90' ${regA}–${regB} · Prorrogação +${et.extraA}–${et.extraB}</span>
-    </div>
-  `;
-}
-
-function showETStillTied(a, b, regA, regB, et) {
-  const sec = document.getElementById('pkSection');
-  sec.innerHTML = `
-    <div class="pk-trigger">
-      <span class="pk-title">EMPATE APÓS PRORROGAÇÃO</span>
-      <span class="pk-sub">90' ${regA}–${regB} · Prorrogação +${et.extraA}–${et.extraB} · Decisão nos pênaltis</span>
-      <button id="btnStartPK" class="btn-pk">⚽ Iniciar disputa de pênaltis</button>
-    </div>
-  `;
-  document.getElementById('btnStartPK').addEventListener('click', () => startQuickPK(a, b));
-}
-
-function startQuickPK(a, b) {
-  quickPK = newShootout(a, b);
-  const sec = document.getElementById('pkSection');
-  sec.innerHTML = renderQuickPKHtml();
-  document.getElementById('btnNextKick').addEventListener('click', nextQuickKick);
-}
-
-function renderQuickPKHtml() {
-  const s = quickPK;
-  const a = s.a, b = s.b;
-  const ga = pkScore(s.kicksA), gb = pkScore(s.kicksB);
-
-  const renderDots = (kicks, isNext) => {
-    const len = Math.max(5, kicks.length + (isNext ? 1 : 0));
-    let html = '';
-    for (let i = 0; i < len; i++) {
-      if (i < kicks.length) {
-        html += `<div class="pk-dot ${kicks[i] ? 'goal' : 'miss'}">${kicks[i] ? '✓' : '✗'}</div>`;
-      } else if (i === kicks.length && isNext) {
-        html += `<div class="pk-dot next">${i + 1}</div>`;
-      } else {
-        html += `<div class="pk-dot">${i + 1}</div>`;
-      }
-    }
-    return html;
-  };
-
-  const nextIsA = !s.decided && s.nextKicker === 'A';
-  const nextIsB = !s.decided && s.nextKicker === 'B';
-
-  let status = '', statusClass = '';
-  if (s.decided) {
-    const wTeam = s.winner === 'A' ? a : b;
-    status = `${wTeam.nome.toUpperCase()} VENCE NOS PÊNALTIS ${ga}–${gb}`;
-    statusClass = 'decided';
-  } else if (s.suddenDeath) {
-    const totalA = s.kicksA.length, totalB = s.kicksB.length;
-    status = `Morte súbita — próxima cobrança ${Math.max(totalA, totalB) + 1}`;
-    statusClass = 'sudden';
-  } else {
-    const next = s.nextKicker === 'A' ? a : b;
-    const kickN = (s.nextKicker === 'A' ? s.kicksA.length : s.kicksB.length) + 1;
-    const idx = s.nextKicker === 'A' ? s.kicksA.length : s.kicksB.length;
-    const p = idx < 5 ? PK_PROBS[idx] : PK_SUDDEN_DEATH;
-    status = `Cobrança ${kickN} · ${next.nome.toUpperCase()} (P ${(p*100).toFixed(1)}%)`;
-  }
-
-  const winnerCls = side => s.decided ? (s.winner === side ? 'winner' : 'loser') : '';
-
-  return `
-    <div class="pk-board">
-      <div class="pk-side ${winnerCls('A')}">
-        <div class="pk-head">
-          <div class="pk-team"><span class="f">${flagImg(a.flag)}</span><span>${a.nome.toUpperCase()}</span></div>
-          <div class="pk-score">${ga}</div>
-        </div>
-        <div class="pk-dots">${renderDots(s.kicksA, nextIsA)}</div>
-      </div>
-      <div class="pk-side ${winnerCls('B')}">
-        <div class="pk-head">
-          <div class="pk-team"><span class="f">${flagImg(b.flag)}</span><span>${b.nome.toUpperCase()}</span></div>
-          <div class="pk-score">${gb}</div>
-        </div>
-        <div class="pk-dots">${renderDots(s.kicksB, nextIsB)}</div>
-      </div>
-    </div>
-    <div class="pk-status ${statusClass}">${status}</div>
-    <div class="pk-action">
-      ${s.decided ? '' : `<button id="btnNextKick" class="btn-pk next">▶ Próxima cobrança</button>`}
-    </div>
-  `;
-}
-
-function nextQuickKick() {
-  if (!quickPK || quickPK.decided) return;
-  takeKick(quickPK);
-  const sec = document.getElementById('pkSection');
-  sec.innerHTML = renderQuickPKHtml();
-  if (!quickPK.decided) {
-    document.getElementById('btnNextKick').addEventListener('click', nextQuickKick);
-  }
-}
-
-selA.addEventListener('change', refreshCards);
-selB.addEventListener('change', refreshCards);
-btnSim.addEventListener('click', () => {
-  const a = teamByName(selA.value);
-  const b = teamByName(selB.value);
-  if (!a || !b || a.nome === b.nome) return;
-  const sim = simulateMatch(a, b);
-  renderResult(a, b, sim);
-});
-
-buildSelect(selA, 'Brasil');
-buildSelect(selB, 'Argentina');
-refreshCards();
 
 /* ============================================================
  * CHAOS CONTROL
