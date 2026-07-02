@@ -610,8 +610,8 @@
   .bracket {
     display: flex;
     align-items: stretch;
-    gap: 4px;
-    min-width: 1320px;
+    gap: 10px;
+    min-width: 1200px;
     padding: 0 8px;
   }
 
@@ -624,13 +624,13 @@
 
   .col-header {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 9px; letter-spacing: .25em; text-transform: uppercase;
+    font-size: 10px; letter-spacing: .2em; text-transform: uppercase;
     color: var(--text-faint);
     text-align: center;
     padding-bottom: 12px;
     border-bottom: 1px solid var(--border);
     margin-bottom: 12px;
-    height: 32px;
+    height: 36px;
   }
   .col-header .label { color: var(--accent); font-weight: 700; }
   .col-header.center { color: var(--accent-2); }
@@ -648,18 +648,61 @@
     gap: 28px;
   }
 
+  /* Bracket pair — wraps two matches that feed into the same next-round match */
+  .bracket-pair {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    position: relative;
+  }
+
+  /* Vertical connector bar linking the two cards in a pair.
+     Spans the full pair height; card backgrounds cover it inside the cards,
+     leaving only the gap between them visually filled. */
+  .col-left .bracket-pair:not(.solo)::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--border);
+    pointer-events: none;
+  }
+  .col-right .bracket-pair:not(.solo)::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--border);
+    pointer-events: none;
+  }
+  /* Connector brightens when both matches in the pair are decided */
+  .col-left .bracket-pair.pair-done::after  { background: rgba(0,245,160,.55); }
+  .col-right .bracket-pair.pair-done::after { background: rgba(0,245,160,.55); }
+
   /* Bracket card */
   .ko-card {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 8px;
-    padding: 8px 10px;
+    padding: 9px 10px;
     cursor: pointer;
-    transition: all .2s;
+    transition: border-color .2s, background .2s, transform .2s, box-shadow .2s;
     position: relative;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 5px;
+  }
+  /* Subtle pulse on cards that are ready to be simulated */
+  .ko-card.clickable {
+    animation: bracket-ready-pulse 2.5s ease-in-out infinite;
+  }
+  .ko-card.clickable:hover { animation: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .ko-card.clickable { animation: none; }
   }
   .ko-card.clickable:hover {
     border-color: var(--accent);
@@ -705,17 +748,17 @@
     gap: 6px;
     padding: 5px 4px;
     border-radius: 4px;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
-    min-height: 24px;
+    min-height: 26px;
   }
-  .ko-card.final-card .ko-row { font-size: 14px; padding: 8px 6px; min-height: 32px; }
+  .ko-card.final-card .ko-row { font-size: 15px; padding: 8px 6px; min-height: 36px; }
   .ko-card.third-card .ko-row { font-size: 12px; padding: 6px 4px; }
-  .ko-row.winner { background: rgba(0,245,160,.08); color: var(--text); }
+  .ko-row.winner { background: rgba(0,245,160,.13); color: var(--text); }
   .ko-row.loser { opacity: .5; }
   .ko-row.placeholder { color: var(--text-faint); font-style: italic; font-weight: 400; }
-  .ko-row .f { font-size: 14px; flex-shrink: 0; }
-  .ko-card.final-card .ko-row .f { font-size: 20px; }
+  .ko-row .f { font-size: 16px; flex-shrink: 0; }
+  .ko-card.final-card .ko-row .f { font-size: 22px; }
   .ko-row .nm {
     overflow: hidden;
     text-overflow: ellipsis;
@@ -723,13 +766,13 @@
   }
   .ko-row .sc {
     font-family: 'Anton', sans-serif;
-    font-size: 16px;
+    font-size: 18px;
     line-height: 1;
-    min-width: 14px;
+    min-width: 16px;
     text-align: right;
     color: var(--text);
   }
-  .ko-card.final-card .ko-row .sc { font-size: 22px; }
+  .ko-card.final-card .ko-row .sc { font-size: 24px; }
   .ko-row.winner .sc { color: var(--accent); }
   .ko-row.loser  .sc { color: var(--text-faint); }
   .ko-row .pk-badge {
@@ -955,6 +998,20 @@
   }
   .btn-round:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(255,210,63,.4); }
   .btn-round:active { transform: translateY(0); }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: .35; }
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes bracket-ready-pulse {
+    0%, 100% { border-color: var(--border); }
+    50%       { border-color: rgba(0,245,160,.4); }
+  }
+
   @media (max-width: 1360px) {
     .bracket-hint { display: block; }
   }
@@ -1212,7 +1269,7 @@ const SCHEDULE = {
     { home: 'Tchéquia',      away: 'África do Sul', date: '2026-06-18', time: '13:00', venue: 'Atlanta',          fixedScore: [1, 1] },
     { home: 'México',        away: 'Coreia do Sul', date: '2026-06-18', time: '22:00', venue: 'Guadalajara', fixedScore: [1, 0] },
     { home: 'Tchéquia',      away: 'México',        date: '2026-06-24', time: '22:00', venue: 'Cidade do México', fixedScore: [0, 3] },
-    { home: 'África do Sul', away: 'Coreia do Sul', date: '2026-06-24', time: '22:00', venue: 'Monterrey', fixedScore: [1, 0] }
+    { home: 'África do Sul', away: 'Coreia do Sul', date: '2026-06-24', time: '22:00', venue: 'Monterrey',        fixedScore: [1, 0] }
   ],
   B: [
     { home: 'Canadá',               away: 'Bósnia e Herzegovina', date: '2026-06-12', time: '16:00', venue: 'Toronto',      fixedScore: [1, 1] },
@@ -1220,87 +1277,87 @@ const SCHEDULE = {
     { home: 'Suíça',                away: 'Bósnia e Herzegovina', date: '2026-06-18', time: '16:00', venue: 'Los Angeles', fixedScore: [4, 1] },
     { home: 'Canadá',               away: 'Catar',                date: '2026-06-18', time: '19:00', venue: 'Vancouver', fixedScore: [6, 0] },
     { home: 'Suíça',                away: 'Canadá',               date: '2026-06-24', time: '16:00', venue: 'Vancouver', fixedScore: [2, 1] },
-    { home: 'Bósnia e Herzegovina', away: 'Catar',                date: '2026-06-24', time: '16:00', venue: 'Seattle', fixedScore: [3, 1] }
+    { home: 'Bósnia e Herzegovina', away: 'Catar',                date: '2026-06-24', time: '16:00', venue: 'Seattle',   fixedScore: [3, 1] }
   ],
   C: [
     { home: 'Brasil',   away: 'Marrocos', date: '2026-06-13', time: '19:00', venue: 'Nova York/Nova Jersey', fixedScore: [1, 1] },
     { home: 'Haiti',    away: 'Escócia',  date: '2026-06-13', time: '22:00', venue: 'Boston',                fixedScore: [0, 1] },
-    { home: 'Escócia',  away: 'Marrocos', date: '2026-06-19', time: '19:00', venue: 'Boston', fixedScore: [0, 1] },
+    { home: 'Escócia',  away: 'Marrocos', date: '2026-06-19', time: '19:00', venue: 'Boston',    fixedScore: [0, 1] },
     { home: 'Brasil',   away: 'Haiti',    date: '2026-06-19', time: '22:00', venue: 'Filadélfia', fixedScore: [3, 0] },
-    { home: 'Escócia',  away: 'Brasil',   date: '2026-06-24', time: '19:00', venue: 'Miami', fixedScore: [0, 3] },
-    { home: 'Marrocos', away: 'Haiti',    date: '2026-06-24', time: '19:00', venue: 'Atlanta', fixedScore: [4, 2] }
+    { home: 'Escócia',  away: 'Brasil',   date: '2026-06-24', time: '19:00', venue: 'Miami',     fixedScore: [0, 3] },
+    { home: 'Marrocos', away: 'Haiti',    date: '2026-06-24', time: '19:00', venue: 'Atlanta',   fixedScore: [4, 2] }
   ],
   D: [
     { home: 'Estados Unidos', away: 'Paraguai',       date: '2026-06-12', time: '22:00', venue: 'Los Angeles',  fixedScore: [4, 1] },
     { home: 'Austrália',      away: 'Turquia',        date: '2026-06-13', time: '01:00', venue: 'Vancouver',    fixedScore: [2, 0] },
     { home: 'Turquia',        away: 'Paraguai',       date: '2026-06-19', time: '01:00', venue: 'San Francisco', fixedScore: [0, 1] },
-    { home: 'Estados Unidos', away: 'Austrália',      date: '2026-06-19', time: '16:00', venue: 'Seattle', fixedScore: [2, 0] },
-    { home: 'Turquia',        away: 'Estados Unidos', date: '2026-06-25', time: '23:00', venue: 'Los Angeles', fixedScore: [3, 2] },
+    { home: 'Estados Unidos', away: 'Austrália',      date: '2026-06-19', time: '16:00', venue: 'Seattle',       fixedScore: [2, 0] },
+    { home: 'Turquia',        away: 'Estados Unidos', date: '2026-06-25', time: '23:00', venue: 'Los Angeles',   fixedScore: [3, 2] },
     { home: 'Paraguai',       away: 'Austrália',      date: '2026-06-25', time: '23:00', venue: 'San Francisco', fixedScore: [0, 0] }
   ],
   E: [
     { home: 'Alemanha',        away: 'Curaçao',         date: '2026-06-14', time: '14:00', venue: 'Houston',    fixedScore: [7, 1] },
     { home: 'Costa do Marfim', away: 'Equador',         date: '2026-06-14', time: '20:00', venue: 'Filadélfia', fixedScore: [1, 0] },
-    { home: 'Alemanha',        away: 'Costa do Marfim', date: '2026-06-20', time: '17:00', venue: 'Toronto', fixedScore: [2, 1] },
-    { home: 'Equador',         away: 'Curaçao',         date: '2026-06-20', time: '21:00', venue: 'Kansas City', fixedScore: [0, 0] },
-    { home: 'Equador',         away: 'Alemanha',        date: '2026-06-25', time: '17:00', venue: 'Nova York/Nova Jersey', fixedScore: [2, 1] },
-    { home: 'Curaçao',         away: 'Costa do Marfim', date: '2026-06-25', time: '17:00', venue: 'Filadélfia', fixedScore: [0, 2] }
+    { home: 'Alemanha',        away: 'Costa do Marfim', date: '2026-06-20', time: '17:00', venue: 'Toronto',                fixedScore: [2, 1] },
+    { home: 'Equador',         away: 'Curaçao',         date: '2026-06-20', time: '21:00', venue: 'Kansas City',            fixedScore: [0, 0] },
+    { home: 'Equador',         away: 'Alemanha',        date: '2026-06-25', time: '17:00', venue: 'Nova York/Nova Jersey',  fixedScore: [2, 1] },
+    { home: 'Curaçao',         away: 'Costa do Marfim', date: '2026-06-25', time: '17:00', venue: 'Filadélfia',            fixedScore: [0, 2] }
   ],
   F: [
     { home: 'Países Baixos', away: 'Japão',         date: '2026-06-14', time: '17:00', venue: 'Dallas',    fixedScore: [2, 2] },
     { home: 'Suécia',        away: 'Tunísia',       date: '2026-06-14', time: '23:00', venue: 'Monterrey', fixedScore: [5, 1] },
-    { home: 'Países Baixos', away: 'Suécia',        date: '2026-06-20', time: '14:00', venue: 'Houston', fixedScore: [5, 1] },
-    { home: 'Tunísia',       away: 'Japão',         date: '2026-06-21', time: '01:00', venue: 'Monterrey', fixedScore: [0, 4] },
-    { home: 'Japão',         away: 'Suécia',        date: '2026-06-25', time: '20:00', venue: 'Dallas', fixedScore: [1, 1] },
-    { home: 'Tunísia',       away: 'Países Baixos', date: '2026-06-25', time: '20:00', venue: 'Kansas City', fixedScore: [1, 3] }
+    { home: 'Países Baixos', away: 'Suécia',        date: '2026-06-20', time: '14:00', venue: 'Houston',      fixedScore: [5, 1] },
+    { home: 'Tunísia',       away: 'Japão',         date: '2026-06-21', time: '01:00', venue: 'Monterrey',    fixedScore: [0, 4] },
+    { home: 'Japão',         away: 'Suécia',        date: '2026-06-25', time: '20:00', venue: 'Dallas',       fixedScore: [1, 1] },
+    { home: 'Tunísia',       away: 'Países Baixos', date: '2026-06-25', time: '20:00', venue: 'Kansas City',  fixedScore: [1, 3] }
   ],
   G: [
     { home: 'Bélgica',       away: 'Egito',         date: '2026-06-15', time: '16:00', venue: 'Seattle',     fixedScore: [1, 1] },
     { home: 'Irã',           away: 'Nova Zelândia', date: '2026-06-15', time: '22:00', venue: 'Los Angeles', fixedScore: [2, 2] },
     { home: 'Bélgica',       away: 'Irã',           date: '2026-06-21', time: '16:00', venue: 'Los Angeles', fixedScore: [0, 0] },
-    { home: 'Nova Zelândia', away: 'Egito',         date: '2026-06-21', time: '22:00', venue: 'Vancouver', fixedScore: [1, 3] },
-    { home: 'Egito',         away: 'Irã',           date: '2026-06-27', time: '00:00', venue: 'Seattle', fixedScore: [1, 1] },
-    { home: 'Nova Zelândia', away: 'Bélgica',       date: '2026-06-27', time: '00:00', venue: 'Vancouver', fixedScore: [1, 5] }
+    { home: 'Nova Zelândia', away: 'Egito',         date: '2026-06-21', time: '22:00', venue: 'Vancouver',   fixedScore: [1, 3] },
+    { home: 'Egito',         away: 'Irã',           date: '2026-06-27', time: '00:00', venue: 'Seattle',     fixedScore: [1, 1] },
+    { home: 'Nova Zelândia', away: 'Bélgica',       date: '2026-06-27', time: '00:00', venue: 'Vancouver',   fixedScore: [1, 5] }
   ],
   H: [
     { home: 'Espanha',        away: 'Cabo Verde',     date: '2026-06-15', time: '13:00', venue: 'Atlanta',  fixedScore: [0, 0] },
     { home: 'Arábia Saudita', away: 'Uruguai',        date: '2026-06-15', time: '19:00', venue: 'Miami',    fixedScore: [1, 1] },
-    { home: 'Espanha',        away: 'Arábia Saudita', date: '2026-06-21', time: '13:00', venue: 'Atlanta', fixedScore: [4, 0] },
-    { home: 'Uruguai',        away: 'Cabo Verde',     date: '2026-06-21', time: '19:00', venue: 'Miami', fixedScore: [2, 2] },
-    { home: 'Cabo Verde',     away: 'Arábia Saudita', date: '2026-06-26', time: '21:00', venue: 'Houston', fixedScore: [0, 0] },
+    { home: 'Espanha',        away: 'Arábia Saudita', date: '2026-06-21', time: '13:00', venue: 'Atlanta',     fixedScore: [4, 0] },
+    { home: 'Uruguai',        away: 'Cabo Verde',     date: '2026-06-21', time: '19:00', venue: 'Miami',       fixedScore: [2, 2] },
+    { home: 'Cabo Verde',     away: 'Arábia Saudita', date: '2026-06-26', time: '21:00', venue: 'Houston',     fixedScore: [0, 0] },
     { home: 'Uruguai',        away: 'Espanha',        date: '2026-06-26', time: '21:00', venue: 'Guadalajara', fixedScore: [0, 1] }
   ],
   I: [
     { home: 'França',  away: 'Senegal', date: '2026-06-16', time: '16:00', venue: 'Nova York/Nova Jersey', fixedScore: [3, 1] },
     { home: 'Iraque',  away: 'Noruega', date: '2026-06-16', time: '19:00', venue: 'Boston',                fixedScore: [1, 4] },
-    { home: 'França',  away: 'Iraque',  date: '2026-06-22', time: '18:00', venue: 'Filadélfia', fixedScore: [3, 0] },
-    { home: 'Noruega', away: 'Senegal', date: '2026-06-22', time: '21:00', venue: 'Nova York/Nova Jersey', fixedScore: [3, 2] },
-    { home: 'Noruega', away: 'França',  date: '2026-06-26', time: '16:00', venue: 'Boston', fixedScore: [1, 4] },
-    { home: 'Senegal', away: 'Iraque',  date: '2026-06-26', time: '16:00', venue: 'Toronto', fixedScore: [5, 0] }
+    { home: 'França',  away: 'Iraque',  date: '2026-06-22', time: '18:00', venue: 'Filadélfia',             fixedScore: [3, 0] },
+    { home: 'Noruega', away: 'Senegal', date: '2026-06-22', time: '21:00', venue: 'Nova York/Nova Jersey',  fixedScore: [3, 2] },
+    { home: 'Noruega', away: 'França',  date: '2026-06-26', time: '16:00', venue: 'Boston',                 fixedScore: [1, 4] },
+    { home: 'Senegal', away: 'Iraque',  date: '2026-06-26', time: '16:00', venue: 'Toronto',                fixedScore: [5, 0] }
   ],
   J: [
     { home: 'Argentina', away: 'Argélia',   date: '2026-06-16', time: '14:00', venue: 'Kansas City',  fixedScore: [3, 0] },
     { home: 'Áustria',   away: 'Jordânia',  date: '2026-06-17', time: '01:00', venue: 'San Francisco', fixedScore: [3, 1] },
-    { home: 'Argentina', away: 'Áustria',   date: '2026-06-22', time: '14:00', venue: 'Dallas', fixedScore: [2, 0] },
-    { home: 'Jordânia',  away: 'Argélia',   date: '2026-06-23', time: '00:00', venue: 'San Francisco', fixedScore: [1, 2] },
-    { home: 'Argélia',   away: 'Áustria',   date: '2026-06-27', time: '23:00', venue: 'Kansas City', fixedScore: [3, 3] },
-    { home: 'Jordânia',  away: 'Argentina', date: '2026-06-27', time: '23:00', venue: 'Dallas', fixedScore: [1, 3] }
+    { home: 'Argentina', away: 'Áustria',   date: '2026-06-22', time: '14:00', venue: 'Dallas',         fixedScore: [2, 0] },
+    { home: 'Jordânia',  away: 'Argélia',   date: '2026-06-23', time: '00:00', venue: 'San Francisco',  fixedScore: [1, 2] },
+    { home: 'Argélia',   away: 'Áustria',   date: '2026-06-27', time: '23:00', venue: 'Kansas City',    fixedScore: [3, 3] },
+    { home: 'Jordânia',  away: 'Argentina', date: '2026-06-27', time: '23:00', venue: 'Dallas',         fixedScore: [1, 3] }
   ],
   K: [
     { home: 'Portugal',    away: 'RD Congo',    date: '2026-06-17', time: '14:00', venue: 'Houston',          fixedScore: [1, 1] },
     { home: 'Uzbequistão', away: 'Colômbia',    date: '2026-06-17', time: '23:00', venue: 'Cidade do México', fixedScore: [1, 3] },
-    { home: 'Portugal',    away: 'Uzbequistão', date: '2026-06-23', time: '14:00', venue: 'Houston', fixedScore: [5, 0] },
+    { home: 'Portugal',    away: 'Uzbequistão', date: '2026-06-23', time: '14:00', venue: 'Houston',     fixedScore: [5, 0] },
     { home: 'Colômbia',    away: 'RD Congo',    date: '2026-06-23', time: '23:00', venue: 'Guadalajara', fixedScore: [1, 0] },
-    { home: 'Colômbia',    away: 'Portugal',    date: '2026-06-27', time: '20:30', venue: 'Miami', fixedScore: [0, 0] },
-    { home: 'RD Congo',    away: 'Uzbequistão', date: '2026-06-27', time: '20:30', venue: 'Atlanta', fixedScore: [3, 1] }
+    { home: 'Colômbia',    away: 'Portugal',    date: '2026-06-27', time: '20:30', venue: 'Miami',       fixedScore: [0, 0] },
+    { home: 'RD Congo',    away: 'Uzbequistão', date: '2026-06-27', time: '20:30', venue: 'Atlanta',     fixedScore: [3, 1] }
   ],
   L: [
     { home: 'Inglaterra', away: 'Croácia',    date: '2026-06-17', time: '17:00', venue: 'Dallas',   fixedScore: [4, 2] },
     { home: 'Gana',       away: 'Panamá',     date: '2026-06-17', time: '20:00', venue: 'Toronto',  fixedScore: [1, 0] },
-    { home: 'Inglaterra', away: 'Gana',       date: '2026-06-23', time: '17:00', venue: 'Boston', fixedScore: [0, 0] },
-    { home: 'Panamá',     away: 'Croácia',    date: '2026-06-23', time: '20:00', venue: 'Toronto', fixedScore: [0, 1] },
-    { home: 'Panamá',     away: 'Inglaterra', date: '2026-06-27', time: '18:00', venue: 'Nova York/Nova Jersey', fixedScore: [0, 2] },
-    { home: 'Croácia',    away: 'Gana',       date: '2026-06-27', time: '18:00', venue: 'Filadélfia', fixedScore: [2, 1] }
+    { home: 'Inglaterra', away: 'Gana',       date: '2026-06-23', time: '17:00', venue: 'Boston',                 fixedScore: [0, 0] },
+    { home: 'Panamá',     away: 'Croácia',    date: '2026-06-23', time: '20:00', venue: 'Toronto',                fixedScore: [0, 1] },
+    { home: 'Panamá',     away: 'Inglaterra', date: '2026-06-27', time: '18:00', venue: 'Nova York/Nova Jersey',  fixedScore: [0, 2] },
+    { home: 'Croácia',    away: 'Gana',       date: '2026-06-27', time: '18:00', venue: 'Filadélfia',            fixedScore: [2, 1] }
   ]
 };
 
@@ -1935,6 +1992,18 @@ const FIXED_KO_RESULTS = {
   'M74': { regularA: 1, regularB: 1, hadET: true,  extraA: 0, extraB: 0, pkWinner: 'B' },
   // 29/jun — Países Baixos 1-1 Marrocos (pên. 2-3) → Marrocos vence
   'M75': { regularA: 1, regularB: 1, hadET: true,  extraA: 0, extraB: 0, pkWinner: 'B' },
+  // 30/jun — França 3-0 Suécia
+  'M77': { regularA: 3, regularB: 0, hadET: false, extraA: 0, extraB: 0, pkWinner: null },
+  // 30/jun — Costa do Marfim 1-2 Noruega
+  'M78': { regularA: 1, regularB: 2, hadET: false, extraA: 0, extraB: 0, pkWinner: null },
+  // 30/jun — México 2-0 Equador
+  'M79': { regularA: 2, regularB: 0, hadET: false, extraA: 0, extraB: 0, pkWinner: null },
+  // 01/jul — Inglaterra 2-1 RD Congo
+  'M80': { regularA: 2, regularB: 1, hadET: false, extraA: 0, extraB: 0, pkWinner: null },
+  // 01/jul — Estados Unidos 2-0 Bósnia e Herzegovina
+  'M81': { regularA: 2, regularB: 0, hadET: false, extraA: 0, extraB: 0, pkWinner: null },
+  // 01/jul — Bélgica 2-2 Senegal (prorr. 3-2) → Bélgica vence
+  'M82': { regularA: 2, regularB: 2, hadET: true,  extraA: 1, extraB: 0, pkWinner: null },
 };
 
 // Shim: código legado do remote referencia KNOCKOUT_FIXED; applyFixedKoResults() já cuida dos resultados reais.
@@ -2513,6 +2582,23 @@ const ROUND_LABELS = {
   '3RD': '3º lugar'
 };
 
+// Pairs of matches (in order) that feed into the same next-round slot.
+// Used to wrap cards in .bracket-pair divs and draw vertical connectors.
+const BRACKET_PAIRS = {
+  left: {
+    R32: [['M74','M77'], ['M73','M75'], ['M83','M84'], ['M81','M82']],
+    R16: [['M89','M90'], ['M93','M94']],
+    QF:  [['M97','M98']],
+    SF:  [['M101']]
+  },
+  right: {
+    R32: [['M76','M78'], ['M79','M80'], ['M86','M88'], ['M85','M87']],
+    R16: [['M91','M92'], ['M95','M96']],
+    QF:  [['M99','M100']],
+    SF:  [['M102']]
+  }
+};
+
 let ko = null;
 
 function buildEmptyKnockout() {
@@ -2603,7 +2689,10 @@ function applyFixedKoResults() {
     m.goalsB = res.regularB + res.extraB;
     if (res.pkWinner) {
       // Kick arrays que reproduzem o placar real de pênaltis
-      const kicks = { 'M74': { A: [1,1,1,0], B: [1,1,1,1] }, 'M75': { A: [1,1,0], B: [1,1,1] } };
+      const kicks = {
+        'M74': { A: [0,1,1,0,1,0], B: [1,1,1,0,0,1] }, // Havertz×,Kimmich✓,Musiala✓,Woltemade×,Amiri✓,Tah× | Maurício✓,Gómez✓,Galarza✓,Sanabria×,Balbuena×,Canale✓
+        'M75': { A: [1,0,1,0,0],   B: [0,1,1,0,1]   }, // Koopmeiners✓,Kluivert×,Weghorst✓,Timber×,Summerville× | ElAynaoui×,Rahimi✓,Talbi✓,Hakimi×,Saibari✓
+      };
       const k = kicks[matchId] || { A: [], B: [] };
       m.shootout = {
         a: m.a, b: m.b,
@@ -3159,24 +3248,28 @@ function renderKnockout() {
   const root = document.getElementById('knockoutBracket');
   if (!ko) { root.innerHTML = ''; return; }
 
-  // Build the 9-column bracket
-  const leftCols = ['R32', 'R16', 'QF', 'SF'];
-  const rightCols = ['SF', 'QF', 'R16', 'R32'];
+  const renderPairs = (side, rnd) => {
+    const pairs = BRACKET_PAIRS[side][rnd];
+    return pairs.map(pair => {
+      const isSolo = pair.length === 1;
+      const bothDone = !isSolo && pair.every(id => ko[id] && ko[id].played && ko[id].winner);
+      const cls = ['bracket-pair', isSolo ? 'solo' : '', bothDone ? 'pair-done' : ''].filter(Boolean).join(' ');
+      return `<div class="${cls}">${pair.map(id => renderBracketCard(ko[id], side)).join('')}</div>`;
+    }).join('');
+  };
 
   let html = `<div class="bracket-wrap"><div class="bracket">`;
 
   // Left side
-  leftCols.forEach(rnd => {
-    const ids = BRACKET_LAYOUT.left[rnd];
-    html += `<div class="round-col">`;
+  ['R32','R16','QF','SF'].forEach(rnd => {
+    html += `<div class="round-col col-left">`;
     html += `<div class="col-header"><span class="label">${ROUND_LABELS[rnd]}</span></div>`;
-    html += `<div class="col-matches">`;
-    ids.forEach(mid => { html += renderBracketCard(ko[mid], 'left'); });
-    html += `</div></div>`;
+    html += `<div class="col-matches">${renderPairs('left', rnd)}</div>`;
+    html += `</div>`;
   });
 
   // Center: Final + 3rd place
-  html += `<div class="round-col">`;
+  html += `<div class="round-col col-center">`;
   html += `<div class="col-header center"><span class="label">FINAL</span></div>`;
   html += `<div class="col-matches center">`;
   html += renderBracketCard(ko['M104'], null);
@@ -3184,13 +3277,11 @@ function renderKnockout() {
   html += `</div></div>`;
 
   // Right side
-  rightCols.forEach(rnd => {
-    const ids = BRACKET_LAYOUT.right[rnd];
-    html += `<div class="round-col">`;
+  ['SF','QF','R16','R32'].forEach(rnd => {
+    html += `<div class="round-col col-right">`;
     html += `<div class="col-header"><span class="label">${ROUND_LABELS[rnd]}</span></div>`;
-    html += `<div class="col-matches">`;
-    ids.forEach(mid => { html += renderBracketCard(ko[mid], 'right'); });
-    html += `</div></div>`;
+    html += `<div class="col-matches">${renderPairs('right', rnd)}</div>`;
+    html += `</div>`;
   });
 
   html += `</div></div>`;
