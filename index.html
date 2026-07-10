@@ -2010,6 +2010,34 @@ const FIXED_KO_RESULTS = {
   'M84': { regularA: 3, regularB: 0, hadET: false, extraA: 0, extraB: 0, pkWinner: null },
   // 02/jul — Suíça 2-0 Argélia
   'M85': { regularA: 2, regularB: 0, hadET: false, extraA: 0, extraB: 0, pkWinner: null },
+  // 03/jul — Argentina 3-2 Cabo Verde (1-1 no normal, 2-1 na prorr.) → Messi; L. Martínez e gcontra
+  'M86': { regularA: 1, regularB: 1, hadET: true,  extraA: 2, extraB: 1, pkWinner: null },
+  // 03/jul — Colômbia 1-0 Gana
+  'M87': { regularA: 1, regularB: 0, hadET: false, extraA: 0, extraB: 0, pkWinner: null },
+  // 03/jul — Austrália 1-1 Egito (pên. 2-4) → Egito vence
+  'M88': { regularA: 1, regularB: 1, hadET: true,  extraA: 0, extraB: 0, pkWinner: 'B' },
+
+  // ===== OITAVAS DE FINAL (04–07/jul) =====
+  // 04/jul — Paraguai 0-1 França
+  'M89': { regularA: 0, regularB: 1, hadET: false, extraA: 0, extraB: 0, pkWinner: null },
+  // 04/jul — Canadá 0-3 Marrocos
+  'M90': { regularA: 0, regularB: 3, hadET: false, extraA: 0, extraB: 0, pkWinner: null },
+  // 05/jul — Brasil 1-2 Noruega (Haaland x2; Neymar) → Brasil eliminado
+  'M91': { regularA: 1, regularB: 2, hadET: false, extraA: 0, extraB: 0, pkWinner: null },
+  // 05/jul — México 2-3 Inglaterra
+  'M92': { regularA: 2, regularB: 3, hadET: false, extraA: 0, extraB: 0, pkWinner: null },
+  // 06/jul — Portugal 0-1 Espanha
+  'M93': { regularA: 0, regularB: 1, hadET: false, extraA: 0, extraB: 0, pkWinner: null },
+  // 06/jul — Estados Unidos 1-4 Bélgica
+  'M94': { regularA: 1, regularB: 4, hadET: false, extraA: 0, extraB: 0, pkWinner: null },
+  // 07/jul — Argentina 3-2 Egito
+  'M95': { regularA: 3, regularB: 2, hadET: false, extraA: 0, extraB: 0, pkWinner: null },
+  // 07/jul — Suíça 0-0 Colômbia (pên. 4-3) → Suíça vence
+  'M96': { regularA: 0, regularB: 0, hadET: true,  extraA: 0, extraB: 0, pkWinner: 'A' },
+
+  // ===== QUARTAS DE FINAL (09–11/jul) =====
+  // 09/jul — França 2-0 Marrocos
+  'M97': { regularA: 2, regularB: 0, hadET: false, extraA: 0, extraB: 0, pkWinner: null },
 };
 
 // Shim: código legado do remote referencia KNOCKOUT_FIXED; applyFixedKoResults() já cuida dos resultados reais.
@@ -2698,6 +2726,8 @@ function applyFixedKoResults() {
       const kicks = {
         'M74': { A: [0,1,1,0,1,0], B: [1,1,1,0,0,1] }, // Havertz×,Kimmich✓,Musiala✓,Woltemade×,Amiri✓,Tah× | Maurício✓,Gómez✓,Galarza✓,Sanabria×,Balbuena×,Canale✓
         'M75': { A: [1,0,1,0,0],   B: [0,1,1,0,1]   }, // Koopmeiners✓,Kluivert×,Weghorst✓,Timber×,Summerville× | ElAynaoui×,Rahimi✓,Talbi✓,Hakimi×,Saibari✓
+        'M88': { A: [0,1,1,0,0],   B: [1,1,1,1]     }, // Austrália 2 × 4 Egito — reproduz o placar final (cobradores não confirmados)
+        'M96': { A: [1,1,1,0,1],   B: [1,1,0,1,0]   }, // Suíça 4 × 3 Colômbia — reproduz o placar final (cobradores não confirmados)
       };
       const k = kicks[matchId] || { A: [], B: [] };
       m.shootout = {
